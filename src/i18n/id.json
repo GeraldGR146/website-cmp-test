@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "about": "Tentang",
+    "products": "Produk",
+    "contact": "Kontak"
+  },
+  "hero": {
+    "title": "PT Cipta Metalindo Persada",
+    "subtitle": "Produsen Terkemuka Komponen Metal Premium & Solusi Industri",
+    "cta": "Pelajari Lebih Lanjut"
+  },
+  "home": {
+    "trustedBy": "Dipercaya Oleh Merek Terkemuka",
+    "featuredProducts": "Produk Unggulan",
+    "featuredDesc": "Temukan rangkaian komponen metal berkualitas tinggi yang dirancang untuk keunggulan",
+    "viewAll": "Lihat Semua Produk"
+  },
+  "about": {
+    "heroTitle": "Tentang Kami",
+    "heroSubtitle": "Membangun Keunggulan Sejak 1995",
+    "companyTitle": "PT Cipta Metalindo Persada",
+    "companyDesc": "PT Cipta Metalindo Persada adalah produsen terkemuka di Indonesia yang mengkhususkan diri dalam komponen metal berkualitas tinggi untuk sektor otomotif, rumah tangga, dan industri. Dengan pengalaman lebih dari 28 tahun, kami telah memantapkan diri sebagai mitra terpercaya bagi merek-merek besar di seluruh Asia Tenggara. Fasilitas manufaktur kami yang canggih, dikombinasikan dengan proses kontrol kualitas yang ketat, memastikan setiap produk memenuhi standar internasional.",
+    "companyDesc2": "Kami berkomitmen pada inovasi, keberlanjutan, dan memberikan nilai luar biasa kepada klien kami. Tim insinyur dan teknisi terampil kami bekerja tanpa henti untuk mendorong batas teknologi manufaktur metal.",
+    "statsYears": "Tahun Pengalaman",
+    "statsProduction": "Unit/Bulan",
+    "statsClients": "Klien Global",
+    "statsProducts": "Lini Produk",
+    "visionTitle": "Visi Kami",
+    "visionDesc": "Menjadi produsen komponen metal paling terpercaya dan inovatif di Asia Tenggara, menetapkan standar kualitas, keberlanjutan, dan kepuasan pelanggan.",
+    "missionTitle": "Misi Kami",
+    "mission1": "Menghadirkan komponen metal berkualitas premium yang melampaui harapan pelanggan",
+    "mission2": "Berinvestasi terus-menerus dalam teknologi dan proses manufaktur canggih",
+    "mission3": "Membangun budaya inovasi, keselamatan, dan tanggung jawab lingkungan",
+    "mission4": "Membangun kemitraan jangka panjang dengan klien melalui keandalan dan keunggulan",
+    "timelineTitle": "Perjalanan Kami",
+    "timeline1Year": "1995",
+    "timeline1Title": "Perusahaan Didirikan",
+    "timeline1Desc": "PT Cipta Metalindo Persada didirikan di Jakarta dengan bengkel kecil dan visi untuk keunggulan manufaktur.",
+    "timeline2Year": "2002",
+    "timeline2Title": "Kontrak Besar Pertama",
+    "timeline2Desc": "Mendapatkan kontrak suku cadang otomotif besar pertama, menandai awal pertumbuhan pesat di industri.",
+    "timeline3Year": "2008",
+    "timeline3Title": "Sertifikasi ISO 9001",
+    "timeline3Desc": "Meraih sertifikasi ISO 9001:2008, menunjukkan komitmen kami terhadap standar kualitas internasional.",
+    "timeline4Year": "2014",
+    "timeline4Title": "Ekspansi Pabrik Baru",
+    "timeline4Desc": "Membuka fasilitas manufaktur kedua dengan mesin CNC canggih dan jalur produksi otomatis.",
+    "timeline5Year": "2019",
+    "timeline5Title": "Ekspansi Pasar Ekspor",
+    "timeline5Desc": "Memperluas operasi untuk melayani pasar internasional di Asia Tenggara, Australia, dan Eropa.",
+    "timeline6Year": "2024",
+    "timeline6Title": "Integrasi Industri 4.0",
+    "timeline6Desc": "Mengimplementasikan sistem manufaktur pintar dengan integrasi IoT dan pemantauan produksi real-time."
+  },
+  "products": {
+    "title": "Produk Kami",
+    "subtitle": "Komponen metal berkualitas tinggi yang dirancang untuk berbagai industri",
+    "categories": {
+      "all": "Semua",
+      "2wheel": "2 Roda",
+      "4wheel": "4 Roda",
+      "household": "Rumah Tangga",
+      "screenOil": "Screen Oil",
+      "rubber": "Karet",
+      "others": "Lainnya"
+    },
+    "viewDetails": "Lihat Detail",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "productsLabel": "produk",
+    "prev": "Sebelumnya",
+    "next": "Selanjutnya",
+    "page": "Halaman",
+    "gridView": "Tampilan Grid",
+    "listView": "Tampilan List",
+    "noProducts": "Tidak ada produk ditemukan dalam kategori ini."
+  },
+  "locale": {
+    "current": "Indonesia",
+    "switchLabel": "ID"
+  },
+  "contact": {
+    "title": "Hubungi Kami",
+    "subtitle": "Kami senang mendengar dari Anda. Kirim pesan dan kami akan merespons sesegera mungkin.",
+    "email": "marketing@cmpindustri.com",
+    "phone": "+62 21 29870890",
+    "address": "Jl. Raya Serang KM. 24 Kawasan Pergudangan Aneka Sinar Mutiara, Blok C No 01-03, Balajara, Tangerang, Banten 15610",
+    "formName": "Nama Lengkap",
+    "formEmail": "Alamat Email",
+    "formSubject": "Subjek",
+    "formMessage": "Pesan",
+    "formSubmit": "Kirim Pesan",
+    "formSending": "Mengirim...",
+    "formSuccess": "Terima kasih! Pesan Anda telah berhasil dikirim.",
+    "formError": "Gagal mengirim pesan. Limit pengiriman pesan telah tercapai.",
+    "officeHours": "Jam Kerja",
+    "officeHoursValue": "Sen - Jum: 08:00 - 17:00 WIB",
+    "findUs": "Temukan Kami",
+    "sendUsMessage": "Kirim Pesan Kepada Kami",
+    "contactInformation": "Informasi Kontak",
+    "reachOut": "Hubungi kami melalui salah satu saluran berikut"
+  },
+  "footer": {
+    "description": "Produsen terkemuka komponen metal premium dan solusi industri di Asia Tenggara.",
+    "quickLinks": "Tautan Cepat",
+    "contactInfo": "Info Kontak",
+    "location": "Lokasi Kami",
+    "rights": "Hak cipta dilindungi.",
+    "privacy": "Kebijakan Privasi",
+    "terms": "Syarat Layanan"
+  }
+}

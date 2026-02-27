@@ -1,0 +1,113 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "products": "Products",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "PT Cipta Metalindo Persada",
+    "subtitle": "Leading Manufacturer of Premium Metal Components & Industrial Solutions",
+    "cta": "Learn More"
+  },
+  "home": {
+    "trustedBy": "Trusted By Leading Brands",
+    "featuredProducts": "Featured Products",
+    "featuredDesc": "Discover our range of high-quality metal components engineered for excellence",
+    "viewAll": "View All Products"
+  },
+  "about": {
+    "heroTitle": "About Us",
+    "heroSubtitle": "Building Excellence Since 1995",
+    "companyTitle": "PT Cipta Metalindo Persada",
+    "companyDesc": "PT Cipta Metalindo Persada is a leading Indonesian manufacturer specializing in high-quality metal components for the automotive, household, and industrial sectors. With over 28 years of experience, we have established ourselves as a trusted partner for major brands across Southeast Asia. Our state-of-the-art manufacturing facilities, combined with rigorous quality control processes, ensure that every product meets international standards.",
+    "companyDesc2": "We are committed to innovation, sustainability, and delivering exceptional value to our clients. Our team of skilled engineers and technicians works tirelessly to push the boundaries of metal manufacturing technology.",
+    "statsYears": "Years Experience",
+    "statsProduction": "Units/Month",
+    "statsClients": "Global Clients",
+    "statsProducts": "Product Lines",
+    "visionTitle": "Our Vision",
+    "visionDesc": "To become the most trusted and innovative metal component manufacturer in Southeast Asia, setting the standard for quality, sustainability, and customer satisfaction.",
+    "missionTitle": "Our Mission",
+    "mission1": "Deliver premium quality metal components that exceed customer expectations",
+    "mission2": "Invest continuously in advanced manufacturing technology and processes",
+    "mission3": "Foster a culture of innovation, safety, and environmental responsibility",
+    "mission4": "Build lasting partnerships with clients through reliability and excellence",
+    "timelineTitle": "Our Journey",
+    "timeline1Year": "1995",
+    "timeline1Title": "Company Founded",
+    "timeline1Desc": "PT Cipta Metalindo Persada was established in Jakarta with a small workshop and a vision for manufacturing excellence.",
+    "timeline2Year": "2002",
+    "timeline2Title": "First Major Contract",
+    "timeline2Desc": "Secured our first major automotive parts contract, marking the beginning of rapid growth in the industry.",
+    "timeline3Year": "2008",
+    "timeline3Title": "ISO 9001 Certification",
+    "timeline3Desc": "Achieved ISO 9001:2008 certification, demonstrating our commitment to international quality standards.",
+    "timeline4Year": "2014",
+    "timeline4Title": "New Factory Expansion",
+    "timeline4Desc": "Opened our second manufacturing facility with advanced CNC machinery and automated production lines.",
+    "timeline5Year": "2019",
+    "timeline5Title": "Export Market Expansion",
+    "timeline5Desc": "Expanded operations to serve international markets across Southeast Asia, Australia, and Europe.",
+    "timeline6Year": "2024",
+    "timeline6Title": "Industry 4.0 Integration",
+    "timeline6Desc": "Implemented smart manufacturing systems with IoT integration and real-time production monitoring."
+  },
+  "products": {
+    "title": "Our Products",
+    "subtitle": "High-quality metal components engineered for diverse industries",
+    "categories": {
+      "all": "All",
+      "2wheel": "2 Wheel",
+      "4wheel": "4 Wheel",
+      "household": "Rumah Tangga",
+      "screenOil": "Screen Oil",
+      "rubber": "Rubber",
+      "others": "Others"
+    },
+    "viewDetails": "View Details",
+    "showing": "Showing",
+    "of": "of",
+    "productsLabel": "products",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page",
+    "gridView": "Grid View",
+    "listView": "List View",
+    "noProducts": "No products found in this category."
+  },
+  "locale": {
+    "current": "English",
+    "switchLabel": "EN"
+  },
+  "contact": {
+    "title": "Get In Touch",
+    "subtitle": "We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "email": "marketing@cmpindustri.com",
+    "phone": "+62 21 29870890",
+    "address": "Jl. Raya Serang KM. 24 Kawasan Pergudangan Aneka Sinar Mutiara, Blok C No 01-03, Balajara, Tangerang, Banten 15610",
+    "formName": "Full Name",
+    "formEmail": "Email Address",
+    "formSubject": "Subject",
+    "formMessage": "Message",
+    "formSubmit": "Send Message",
+    "formSending": "Sending...",
+    "formSuccess": "Thank you! Your message has been sent successfully.",
+    "formError": "Failed to send message. Limit Reached.",
+    "officeHours": "Office Hours",
+    "officeHoursValue": "Mon - Fri: 08:00 - 17:00 WIB",
+    "findUs": "Find Us",
+    "sendUsMessage": "Send Us a Message",
+    "contactInformation": "Contact Information",
+    "reachOut": "Reach out to us through any of the following channels"
+  },
+  "footer": {
+    "description": "Leading manufacturer of premium metal components and industrial solutions in Southeast Asia.",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "location": "Our Location",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}
