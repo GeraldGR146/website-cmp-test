@@ -15,7 +15,7 @@ export function ContactPage() {
           <AnimatedSection animation="scale-up">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-[#FFFFFF] shadow-2xl shadow-[#0B2A59]/30 mb-6">
                             <CloudinaryImage
-                              src="https://res.cloudinary.com/dalb8mpfd/image/upload/Logo_CMP.png"
+                              src="https://res.cloudinary.com/dtny14e7t/image/upload/Logo_CMP.png"
                               alt="CMP"
                               loading="eager"
                               className="p-1"

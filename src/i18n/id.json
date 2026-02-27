@@ -63,6 +63,8 @@
       "household": "Rumah Tangga",
       "screenOil": "Screen Oil",
       "rubber": "Karet",
+      "cnc": "CNC",
+      "pvc": "PVC",
       "others": "Lainnya"
     },
     "viewDetails": "Lihat Detail",

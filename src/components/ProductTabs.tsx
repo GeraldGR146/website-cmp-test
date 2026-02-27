@@ -7,7 +7,7 @@ interface ProductTabsProps {
 }
 
 const categories: ProductCategory[] = [
-  'all', '2wheel', '4wheel', 'household', 'screenOil', 'rubber', 'others'
+  'all', '2wheel', '4wheel', 'household', 'screenOil', 'rubber', 'pvc', 'cnc', 'others'
 ];
 
 export function ProductTabs({ activeCategory, onCategoryChange }: ProductTabsProps) {

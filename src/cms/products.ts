@@ -6,7 +6,7 @@ export const products: Product[] = [
     name: { en: 'Motorcycle Exhaust Bracket', id: 'Bracket Knalpot Motor' },
     description: { en: 'High-strength steel bracket for motorcycle exhaust systems', id: 'Bracket baja kekuatan tinggi untuk sistem knalpot motor' },
     category: '2wheel',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=400&h=400&fit=crop',
+    image: 'https://res.cloudinary.com/dtny14e7t/image/upload/cld-sample-5.jpg',
     featured: true
   },
   {
@@ -45,7 +45,7 @@ export const products: Product[] = [
     id: 'prod-006',
     name: { en: 'Suspension Arm', id: 'Lengan Suspensi' },
     description: { en: 'Forged aluminum suspension arm for passenger vehicles', id: 'Lengan suspensi aluminium tempa untuk kendaraan penumpang' },
-    category: '4wheel',
+    category: 'cnc',
     image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop',
     featured: false
   },
@@ -61,7 +61,7 @@ export const products: Product[] = [
     id: 'prod-008',
     name: { en: 'Cabinet Hardware Set', id: 'Set Perangkat Keras Kabinet' },
     description: { en: 'Modern cabinet knobs and pulls in brushed steel', id: 'Knob dan tarikan kabinet modern dari baja sikat' },
-    category: 'household',
+    category: 'pvc',
     image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400&h=400&fit=crop',
     featured: false
   },

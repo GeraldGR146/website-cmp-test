@@ -48,7 +48,7 @@ export function ProductsPage() {
       <HeroSection
         title={t.products.title}
         subtitle={t.products.subtitle}
-        backgroundImage="https://res.cloudinary.com/dalb8mpfd/image/upload/v1770360393/samples/bike.jpg"
+        backgroundImage="https://res.cloudinary.com/dtny14e7t/image/upload/v1770360393/samples/bike.jpg"
         overlay="blue"
         size="small"
       />

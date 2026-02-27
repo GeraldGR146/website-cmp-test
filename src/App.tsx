@@ -7,28 +7,33 @@ import { AboutPage } from '@/pages/AboutPage';
 import { ProductsPage } from '@/pages/ProductsPage';
 import { ContactPage } from '@/pages/ContactPage';
 
+const VALID_PAGES = ['home', 'about', 'products', 'contact'];
+
 function AppContent() {
   const [currentPage, setCurrentPage] = useState('home');
 
+  const getPageFromPath = () => {
+    const path = window.location.pathname.replace('/', '');
+    return VALID_PAGES.includes(path) ? path : 'home';
+  };
+
   const handleNavigate = useCallback((page: string) => {
+    if (!VALID_PAGES.includes(page)) return;
+
     setCurrentPage(page);
+
+    const newPath = page === 'home' ? '/' : `/${page}`;
+    window.history.pushState({}, '', newPath);
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    window.history.pushState({}, '', `#${page}`);
   }, []);
 
   useEffect(() => {
-    const hash = window.location.hash.replace('#', '');
-    if (['home', 'about', 'products', 'contact'].includes(hash)) {
-      setCurrentPage(hash);
-    }
+    // Set initial page from URL
+    setCurrentPage(getPageFromPath());
 
     const handlePopState = () => {
-      const h = window.location.hash.replace('#', '');
-      if (['home', 'about', 'products', 'contact'].includes(h)) {
-        setCurrentPage(h);
-      } else {
-        setCurrentPage('home');
-      }
+      setCurrentPage(getPageFromPath());
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -51,9 +56,7 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-white">
       <Header currentPage={currentPage} onNavigate={handleNavigate} />
-      <main className={currentPage === 'contact' ? '' : 'pt-0'}>
-        {renderPage()}
-      </main>
+      <main>{renderPage()}</main>
       <Footer onNavigate={handleNavigate} />
     </div>
   );

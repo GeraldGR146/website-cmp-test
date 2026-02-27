@@ -12,7 +12,7 @@ export interface Product {
   featured: boolean;
 }
 
-export type ProductCategory = 'all' | '2wheel' | '4wheel' | 'household' | 'screenOil' | 'rubber' | 'others';
+export type ProductCategory = 'all' | '2wheel' | '4wheel' | 'household' | 'screenOil' | 'rubber' | 'cnc' | 'pvc' | 'others';
 
 export interface TimelineEvent {
   year: string;

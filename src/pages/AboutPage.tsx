@@ -69,7 +69,7 @@ export function AboutPage() {
       <HeroSection
         title={t.about.heroTitle}
         subtitle={t.about.heroSubtitle}
-        backgroundVideo="https://res.cloudinary.com/dalb8mpfd/video/upload/v1770360399/samples/dance-2.mp4"
+        backgroundVideo="https://res.cloudinary.com/dtny14e7t/video/upload/samples/dance-2.mp4"
         overlay="blue"
         size="medium"
       />
