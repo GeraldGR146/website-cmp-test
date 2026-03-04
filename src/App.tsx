@@ -21,12 +21,30 @@ function ScrollManager() {
   const navigationType = useNavigationType();
 
   useEffect(() => {
-    // Let browser handle refresh/back scroll restoration
-    window.history.scrollRestoration = 'auto';
+    const handleScroll = () => {
+      sessionStorage.setItem(
+        `scroll-${pathname}`,
+        String(window.scrollY)
+      );
+    };
 
-    // Only scroll to top on NEW navigation (link click)
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
     if (navigationType === 'PUSH') {
       window.scrollTo(0, 0);
+    } else {
+      const saved = sessionStorage.getItem(`scroll-${pathname}`);
+      if (saved) {
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(saved));
+        }, 50);
+      }
     }
   }, [pathname, navigationType]);
 

@@ -136,7 +136,7 @@ export function Header() {
               }
               className="px-3 py-1.5 rounded-lg bg-gray-100 text-xs font-bold text-[#0B2A59]"
             >
-              {locale === 'en' ? 'ID' : 'EN'}
+              {locale === 'en' ? 'EN' : 'ID'}
             </button>
 
             <button
