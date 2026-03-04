@@ -1,4 +1,3 @@
-import { CloudinaryImage } from '@/components/CloudinaryImage';
 import { useLocale } from '@/i18n/LocaleContext';
 import { ContactForm } from '@/components/ContactForm';
 import { AnimatedSection } from '@/components/AnimatedSection';
@@ -14,8 +13,8 @@ export function ContactPage() {
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center">
           <AnimatedSection animation="scale-up">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-[#FFFFFF] shadow-2xl shadow-[#0B2A59]/30 mb-6">
-                <CloudinaryImage
-                  src="/Logo_CMP.png"
+                <img
+                  src="/logos/Logo_CMP.png"
                   alt="CMP"
                   loading="eager"
                   className="p-1"

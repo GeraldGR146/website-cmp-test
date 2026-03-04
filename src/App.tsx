@@ -4,6 +4,7 @@ import {
   Route,
   useLocation,
   Navigate,
+  useNavigationType,
 } from 'react-router-dom';
 import { useEffect } from 'react';
 import { LocaleProvider, useLocale } from '@/i18n/LocaleContext';
@@ -15,12 +16,19 @@ import { ProductsPage } from '@/pages/ProductsPage';
 import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
-function ScrollToTop() {
+function ScrollManager() {
   const { pathname } = useLocation();
+  const navigationType = useNavigationType();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [pathname]);
+    // Let browser handle refresh/back scroll restoration
+    window.history.scrollRestoration = 'auto';
+
+    // Only scroll to top on NEW navigation (link click)
+    if (navigationType === 'PUSH') {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, navigationType]);
 
   return null;
 }
@@ -33,9 +41,11 @@ function LocaleRedirect() {
 function AppLayout() {
   return (
     <>
-      <ScrollToTop />
+      <ScrollManager />
+
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
+
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<LocaleRedirect />} />
@@ -55,6 +65,7 @@ function AppLayout() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
+
         <Footer />
       </div>
     </>
