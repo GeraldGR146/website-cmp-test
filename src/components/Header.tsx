@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLocale, type Locale } from '@/i18n/LocaleContext';
-import { CloudinaryImage } from '@/components/CloudinaryImage';
 
 export function Header() {
   const { locale, setLocale, t } = useLocale();
@@ -64,11 +63,9 @@ export function Header() {
           {/* Logo */}
           <Link to={`/${locale}`} className="flex items-center gap-3 group">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffffff] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md overflow-hidden">
-              <CloudinaryImage
-                src="/Logo_CMP.png"
+              <img
+                src="/logos/Logo_CMP.png"
                 alt="CMP"
-                crop="scale"
-                objectFit="contain"
                 loading="eager"
                 className="h-10 w-auto object-contain"
               />

@@ -1,4 +1,3 @@
-import { CloudinaryImage } from '@/components/CloudinaryImage';
 import { Link } from 'react-router-dom';
 import { useLocale } from '@/i18n/LocaleContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
@@ -26,11 +25,9 @@ export function Footer() {
           <AnimatedSection animation="fade-up" className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFFFFF] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md overflow-hidden">
-              <CloudinaryImage
-                src= "/Logo_CMP.png"
+              <img
+                src= "/logos/Logo_CMP.png"
                 alt="CMP"
-                crop="scale"
-                objectFit='contain'
                 loading="eager"
                 className="h-10 w-auto object-contain"
               />
