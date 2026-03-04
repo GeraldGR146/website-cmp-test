@@ -1,8 +1,8 @@
+import { CloudinaryImage } from '@/components/CloudinaryImage';
 import { useLocale } from '@/i18n/LocaleContext';
 import { ContactForm } from '@/components/ContactForm';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { contactInfo } from '@/cms/contact';
-import { CloudinaryImage } from '@/components/CloudinaryImage';
 
 export function ContactPage() {
   const { locale, t } = useLocale();
@@ -14,13 +14,13 @@ export function ContactPage() {
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center">
           <AnimatedSection animation="scale-up">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-[#FFFFFF] shadow-2xl shadow-[#0B2A59]/30 mb-6">
-                            <CloudinaryImage
-                              src="https://res.cloudinary.com/dtny14e7t/image/upload/Logo_CMP.png"
-                              alt="CMP"
-                              loading="eager"
-                              className="p-1"
-                            />
-              </div>
+                <CloudinaryImage
+                  src="/Logo_CMP.png"
+                  alt="CMP"
+                  loading="eager"
+                  className="p-1"
+                />
+            </div>
           </AnimatedSection>
           <AnimatedSection animation="fade-up" delay={100}>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900">{t.contact.title}</h1>
@@ -132,7 +132,7 @@ export function ContactPage() {
                 </div>
               </AnimatedSection>
 
-              {/* Real Embedded Map */}
+              {/* Embedded Map Area */}
               <AnimatedSection
                 animation="fade-up"
                 delay={300}
@@ -149,7 +149,6 @@ export function ContactPage() {
                   />
                 </div>
               </AnimatedSection>
-
             </div>
           </div>
         </div>

@@ -1,155 +1,181 @@
-import { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useNavigate, Link } from 'react-router-dom';
 import { useLocale } from '@/i18n/LocaleContext';
 import { HeroSection } from '@/components/HeroSection';
 import { ProductCard } from '@/components/ProductCard';
-import { AnimatedSection } from '@/components/AnimatedSection';
-import { useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { getFeaturedProducts } from '@/cms/products';
 import { clientLogos } from '@/cms/homepage';
 
-interface HomePageProps {
-  onNavigate: (page: string) => void;
-}
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
 
-function LogoCarousel() {
-  const { t } = useLocale();
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isPaused, setIsPaused] = useState(false);
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5 }
+  }
+};
 
-  // Duplicate logos for infinite scroll effect
-  const duplicatedLogos = [...clientLogos, ...clientLogos, ...clientLogos];
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-
-    let animationId: number;
-    let scrollPos = 0;
-    const speed = 0.5;
-
-    const animate = () => {
-      if (!isPaused) {
-        scrollPos += speed;
-        // Reset when we've scrolled past the first set
-        const singleSetWidth = el.scrollWidth / 3;
-        if (scrollPos >= singleSetWidth) {
-          scrollPos = 0;
-        }
-        el.scrollLeft = scrollPos;
-      }
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animationId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationId);
-  }, [isPaused]);
-
-  return (
-    <section className="py-12 bg-gray-50 border-b border-gray-100 overflow-hidden">
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-        <AnimatedSection animation="fade-down">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
-            {t.home.trustedBy}
-          </p>
-        </AnimatedSection>
-      </div>
-
-      <div
-        ref={scrollRef}
-        className="overflow-hidden whitespace-nowrap"
-        // onMouseEnter={() => setIsPaused(true)}
-        // onMouseLeave={() => setIsPaused(false)}
-        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
-        <div className="inline-flex gap-10 px-10 items-center">
-          {duplicatedLogos.map((client, i) => (
-            <div
-              key={`${client.name}-${i}`}
-              className="inline-flex items-center justify-center h-20 w-40 px-6 py-4 rounded-xl bg-white border border-gray-100 
-                shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-[#0B2A59]/20
-                transition-all duration-300 cursor-pointer shrink-0 group"
-            >
-              <img
-                src={client.image}
-                alt={client.name}
-                className="h-10 w-auto max-w-[120px] object-contain grayscale opacity-50 
-                  group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500"
-                loading="lazy"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <style>{`
-        div[style*="scrollbar-width"] {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        div[style*="scrollbar-width"]::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-    </section>
-  );
-}
-
-export function HomePage({ onNavigate }: HomePageProps) {
-  const { t } = useLocale();
+export function HomePage() {
+  const { t, locale } = useLocale();
+  const navigate = useNavigate();
   const featured = getFeaturedProducts();
-  const { ref: gridRef, isVisible: gridVisible } = useScrollAnimation({ threshold: 0.05 });
+
+  const learnMoreText = locale === 'en' ? 'Learn More' : 'Pelajari Selengkapnya';
 
   return (
-    <div className="page-enter">
-      {/* Hero Section — CTA now says "Learn More" and goes to About */}
-      <HeroSection
-        title={t.hero.title}
-        subtitle={t.hero.subtitle}
-        cta={t.hero.cta}
-        onCtaClick={() => onNavigate('about')}
-        backgroundImage="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80"
-        overlay="blue"
-        size="full"
-      />
+    <div className="overflow-hidden">
+      {/* Hero Section */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <HeroSection
+          title={t.hero.title}
+          subtitle={t.hero.subtitle}
+          cta={learnMoreText}
+          onCtaClick={() => navigate(`/${locale}/about`)}
+          backgroundImage="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80"
+          overlay="blue"
+          size="full"
+        />
+      </motion.div>
 
       {/* Client Logos Carousel */}
-      <LogoCarousel />
+      <section className="py-16 bg-white overflow-hidden">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center text-xs font-bold uppercase tracking-[0.3em] text-gray-400 mb-12"
+          >
+            {t.home.trustedBy}
+          </motion.p>
+          
+          <div className="relative flex overflow-x-hidden">
+            <motion.div 
+              className="flex gap-20 items-center whitespace-nowrap"
+              animate={{ x: [0, -1000] }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 30, 
+                ease: "linear" 
+              }}
+            >
+              {[...clientLogos, ...clientLogos, ...clientLogos].map((client, idx) => (
+                <div
+                  key={`${client.name}-${idx}`}
+                  className="flex items-center justify-center grayscale opacity-40 hover:opacity-100 transition-all duration-300 w-32 shrink-0"
+                >
+                  <img
+                    src={client.image}
+                    alt={client.name}
+                    className="h-14 md:h-16 w-auto object-contain"
+                  />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Featured Products */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-24 bg-gray-50">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-          <AnimatedSection animation="fade-up" className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
+          <div className="text-center mb-16">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl font-black text-gray-900 tracking-tight"
+            >
               {t.home.featuredProducts}
-            </h2>
-            <p className="mt-4 text-gray-500 max-w-xl mx-auto">
+            </motion.h2>
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="mt-6 text-gray-500 max-w-2xl mx-auto text-lg"
+            >
               {t.home.featuredDesc}
-            </p>
-          </AnimatedSection>
-
-          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.slice(0, 9).map((product, i) => (
-              <div
-                key={product.id}
-                className={`anim-fade-up ${gridVisible ? 'anim-visible' : ''}`}
-                style={{ transitionDelay: gridVisible ? `${i * 80}ms` : '0ms' }}
-              >
-                <ProductCard product={product} />
-              </div>
-            ))}
+            </motion.p>
           </div>
 
-          <AnimatedSection animation="fade-up" delay={400} className="mt-12 text-center">
-            <button
-              onClick={() => onNavigate('products')}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#0B2A59] px-8 py-3.5 text-sm font-semibold text-white shadow-md hover:shadow-lg hover:bg-[#0d3470] transition-all hover:-translate-y-0.5 hover:scale-105 duration-300"
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+          >
+            {featured.slice(0, 9).map((product) => (
+              <motion.div key={product.id} variants={itemVariants}>
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="mt-16 text-center"
+          >
+            <Link
+              to={`/${locale}/products`}
+              className="inline-flex items-center gap-3 rounded-2xl bg-[#0B2A59] px-10 py-4 text-lg font-bold text-white shadow-xl hover:shadow-2xl hover:bg-[#0d3470] transition-all transform hover:-translate-y-1"
             >
               {t.home.viewAll}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </button>
-          </AnimatedSection>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Quality Banner */}
+      <section className="py-24 bg-white">
+        <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative bg-[#0B2A59] rounded-[40px] p-12 lg:p-24 overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-white/5 rounded-full blur-3xl" />
+            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-4xl lg:text-5xl font-black text-white leading-tight mb-8">
+                  Precision Engineering for Industrial Excellence
+                </h2>
+                <div className="flex gap-4">
+                  <div className="px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-bold border border-white/20">
+                    ISO 9001:2015
+                  </div>
+                  <div className="px-6 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-sm font-bold border border-white/20">
+                    Industry 4.0
+                  </div>
+                </div>
+              </div>
+              <div className="text-blue-100 text-lg leading-relaxed">
+                Our manufacturing process combines decades of expertise with cutting-edge technology to deliver components that exceed global standards. From automotive parts to household solutions, we are your partner in quality.
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

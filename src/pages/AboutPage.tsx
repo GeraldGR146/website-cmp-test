@@ -1,9 +1,12 @@
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useLocale } from '@/i18n/LocaleContext';
 import { HeroSection } from '@/components/HeroSection';
 import { Timeline } from '@/components/Timeline';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { useCountUp, useScrollAnimation } from '@/hooks/useScrollAnimation';
 import { stats, timeline } from '@/cms/about';
+import { Users, Target, Rocket, ShieldCheck } from 'lucide-react';
 
 function StatCard({ stat, index }: { stat: typeof stats[number]; index: number }) {
   const { locale } = useLocale();
@@ -181,73 +184,97 @@ export function AboutPage() {
         </div>
       </section>
 
-      {/* Vision & Mission */}
-      <section className="py-20 lg:py-28 bg-white relative overflow-hidden">
-        <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-          <AnimatedSection animation="fade-up" className="text-center mb-14">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0B2A59] bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-              {locale === 'en' ? '✦ Our Purpose' : '✦ Tujuan Kami'}
-            </span>
-            <h2 className="mt-6 text-3xl sm:text-4xl font-bold text-gray-900">
-              {locale === 'en' ? 'Vision & Mission' : 'Visi & Misi'}
-            </h2>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Vision */}
-            <AnimatedSection animation="fade-right" delay={100}>
-              <div className="relative bg-gradient-to-br from-[#0B2A59] to-[#0d3470] rounded-3xl p-8 lg:p-10 text-white overflow-hidden
-                hover:shadow-2xl transition-shadow duration-500 h-full">
-                {/* Decorative circles */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/3 -translate-x-1/3" />
-
-                <div className="relative">
-                  <div className="flex items-center gap-4 mb-6">
-                    <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center
-                      border border-white/20 shadow-lg">
-                      <svg className="w-7 h-7 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-2xl font-bold">{t.about.visionTitle}</h3>
-                  </div>
-                  <p className="text-blue-100 leading-relaxed text-lg">{t.about.visionDesc}</p>
-                </div>
-              </div>
+        {/* Vision & Mission */}
+        <section className="py-24 lg:py-32 bg-white relative overflow-hidden">
+          <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+            
+            <AnimatedSection animation="fade-up" className="text-center mb-20">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-[#0B2A59] bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                {locale === 'en' ? '✦ Our Purpose' : '✦ Tujuan Kami'}
+              </span>
+              <h2 className="mt-6 text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900">
+                {locale === 'en' ? 'Vision & Mission' : 'Visi & Misi'}
+              </h2>
             </AnimatedSection>
 
-            {/* Mission */}
-            <AnimatedSection animation="fade-left" delay={200}>
-              <div className="bg-white rounded-3xl p-8 lg:p-10 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 h-full">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0B2A59]/10 to-blue-400/10 flex items-center justify-center
-                    shadow-sm border border-[#0B2A59]/5">
-                    <svg className="w-7 h-7 text-[#0B2A59]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">{t.about.missionTitle}</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+
+              {/* Mission (Left) */}
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="lg:col-span-7 space-y-12"
+              >
+                <div>
+                  <h3 className="text-4xl font-extrabold text-gray-900 mb-4">
+                    {t.about.missionTitle}
+                  </h3>
+                  <div className="h-1.5 w-24 bg-[#0B2A59] rounded-full" />
                 </div>
-                <ul className="space-y-4">
-                  {[t.about.mission1, t.about.mission2, t.about.mission3, t.about.mission4].map((m, i) => (
-                    <li key={i} className="flex items-start gap-4 group/item">
-                      <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center shrink-0 mt-0.5
-                        group-hover/item:bg-green-100 group-hover/item:scale-110 transition-all duration-300">
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                        </svg>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[
+                    { text: t.about.mission1, icon: <ShieldCheck className="w-5 h-5 text-blue-600" /> },
+                    { text: t.about.mission2, icon: <Rocket className="w-5 h-5 text-blue-600" /> },
+                    { text: t.about.mission3, icon: <Target className="w-5 h-5 text-blue-600" /> },
+                    { text: t.about.mission4, icon: <Users className="w-5 h-5 text-blue-600" /> }
+                  ].map((item, i) => (
+                    <motion.div 
+                      key={i}
+                      whileHover={{ scale: 1.03 }}
+                      className="p-6 rounded-2xl bg-gray-50 border border-gray-100 flex gap-5 hover:bg-white hover:shadow-lg transition-all duration-300"
+                    >
+                      <div className="shrink-0 w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center border border-gray-100">
+                        {item.icon}
                       </div>
-                      <span className="text-gray-600 leading-relaxed group-hover/item:text-gray-900 transition-colors">{m}</span>
-                    </li>
+                      <p className="text-gray-700 text-sm leading-relaxed font-medium">
+                        {item.text}
+                      </p>
+                    </motion.div>
                   ))}
-                </ul>
-              </div>
-            </AnimatedSection>
+                </div>
+              </motion.div>
+
+              {/* Vision (Right) */}
+              <motion.div 
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="lg:col-span-5 lg:sticky lg:top-32"
+              >
+                <div className="bg-[#0B2A59] rounded-[40px] p-12 text-white relative overflow-hidden group">
+                  
+                  {/* Decorative blur */}
+                  <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors duration-500" />
+                  
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mb-8">
+                      <Target size={32} className="text-blue-300" />
+                    </div>
+
+                    <h3 className="text-3xl font-bold mb-6">
+                      {t.about.visionTitle}
+                    </h3>
+
+                    <p className="text-xl text-blue-100 leading-relaxed font-light italic">
+                      "{t.about.visionDesc}"
+                    </p>
+
+                    <div className="mt-12 flex items-center gap-4">
+                      <div className="h-px flex-grow bg-white/20" />
+                      <div className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">
+                        excellence
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+
 
       {/* Timeline */}
       <section className="py-20 lg:py-28 bg-gradient-to-b from-gray-50 via-white to-gray-50 relative overflow-hidden">
@@ -287,30 +314,48 @@ export function AboutPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3" />
 
-        <AnimatedSection animation="scale-up" className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center relative">
+        <AnimatedSection
+          animation="scale-up"
+          className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center relative"
+        >
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            {locale === 'en' ? 'Ready to Partner With Us?' : 'Siap Bermitra Dengan Kami?'}
+            {locale === 'en'
+              ? 'Ready to Partner With Us?'
+              : 'Siap Bermitra Dengan Kami?'}
           </h2>
+
           <p className="text-blue-200 text-lg max-w-2xl mx-auto mb-10">
             {locale === 'en'
-              ? 'Let\'s discuss how we can bring your manufacturing vision to life with precision and quality.'
+              ? "Let's discuss how we can bring your manufacturing vision to life with precision and quality."
               : 'Mari diskusikan bagaimana kami dapat mewujudkan visi manufaktur Anda dengan presisi dan kualitas.'}
           </p>
-          <button
-            onClick={() => {
-              window.history.pushState({}, '', '#contact');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-4 text-base font-bold text-[#0B2A59] 
-              shadow-xl hover:shadow-2xl hover:bg-blue-50 transition-all duration-300 transform hover:-translate-y-1
-              hover:scale-105"
-          >
-            {locale === 'en' ? 'Get In Touch' : 'Hubungi Kami'}
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </button>
+
+          {/* ✅ BUTTON CONTAINER */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+            <Link
+              to={`/${locale}/contact`}
+              className="inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-4 text-base font-bold text-[#0B2A59] 
+                shadow-xl hover:shadow-2xl hover:bg-blue-50 transition-all duration-300 
+                transform hover:-translate-y-1 hover:scale-105"
+            >
+              {locale === 'en' ? 'Contact' : 'Kontak'}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+
+            <Link
+              to={`/${locale}/products`}
+              className="inline-flex items-center gap-3 rounded-2xl bg-white px-10 py-4 text-base font-bold text-[#0B2A59] 
+                shadow-xl hover:shadow-2xl hover:bg-blue-50 transition-all duration-300 
+                transform hover:-translate-y-1 hover:scale-105"
+            >
+              {locale === 'en' ? 'Products' : 'Produk'}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
         </AnimatedSection>
       </section>
     </div>

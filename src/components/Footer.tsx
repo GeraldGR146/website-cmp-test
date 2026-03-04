@@ -1,14 +1,18 @@
+import { CloudinaryImage } from '@/components/CloudinaryImage';
+import { Link } from 'react-router-dom';
 import { useLocale } from '@/i18n/LocaleContext';
 import { AnimatedSection } from '@/components/AnimatedSection';
 import { contactInfo } from '@/cms/contact';
-import { CloudinaryImage } from '@/components/CloudinaryImage';
 
-interface FooterProps {
-  onNavigate: (page: string) => void;
-}
-
-export function Footer({ onNavigate }: FooterProps) {
+export function Footer() {
   const { locale, t } = useLocale();
+
+  const quickLinks = [
+    { label: t.nav.home, path: `/${locale}` },
+    { label: t.nav.about, path: `/${locale}/about` },
+    { label: t.nav.products, path: `/${locale}/products` },
+    { label: t.nav.contact, path: `/${locale}/contact` },
+  ];
 
   return (
     <footer className="bg-[#0B2A59] text-white relative overflow-hidden">
@@ -23,7 +27,7 @@ export function Footer({ onNavigate }: FooterProps) {
             <div className="flex items-center gap-3 mb-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFFFFF] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md overflow-hidden">
               <CloudinaryImage
-                src= "Logo_CMP"
+                src= "/Logo_CMP.png"
                 alt="CMP"
                 crop="scale"
                 objectFit='contain'
@@ -47,20 +51,14 @@ export function Footer({ onNavigate }: FooterProps) {
               {t.footer.quickLinks}
             </h3>
             <ul className="space-y-2.5">
-              {[
-                { key: 'home', label: t.nav.home },
-                { key: 'about', label: t.nav.about },
-                { key: 'products', label: t.nav.products },
-                { key: 'contact', label: t.nav.contact },
-              ].map((link) => (
-                <li key={link.key}>
-                  <button
-                    onClick={() => onNavigate(link.key)}
+              {quickLinks.map((link) => (
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
                     className="text-sm text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
                   >
-                    <span className="opacity-0 -translate-x-2 transition-all duration-300 group-hover:opacity-100">→</span>
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -94,23 +92,22 @@ export function Footer({ onNavigate }: FooterProps) {
             </ul>
           </AnimatedSection>
 
-
           {/* Map */}
           <AnimatedSection animation="fade-up" delay={300}>
             <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-blue-300">
               {t.footer.location}
             </h3>
             <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg hover:border-white/20 transition-colors duration-300">
-              <div className="relative w-full h-40">
-                <iframe
-                  src={contactInfo.mapEmbedUrl}
-                  className="absolute inset-0 w-full h-full"
-                  style={{ border: 0 }}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-              </div>
+              <iframe
+                src={contactInfo.mapEmbedUrl}
+                width="100%"
+                height="160"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="CMP Location"
+              />
             </div>
           </AnimatedSection>
         </div>

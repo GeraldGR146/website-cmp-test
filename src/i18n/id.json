@@ -111,5 +111,10 @@
     "rights": "Hak cipta dilindungi.",
     "privacy": "Kebijakan Privasi",
     "terms": "Syarat Layanan"
-  }
+  },
+  "notFound": {
+    "title": "Halaman Tidak Ditemukan",
+    "description": "Halaman yang Anda cari tidak ada atau telah dipindahkan. Mari kembali ke halaman utama.",
+    "backHome": "Kembali ke Beranda"
+}
 }
