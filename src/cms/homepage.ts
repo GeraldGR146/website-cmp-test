@@ -1,13 +1,15 @@
 import type { ClientLogo } from '@/types';
 
 export const clientLogos: ClientLogo[] = [
-  { name: 'HONDA', image: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg' },
-  { name: 'NISSAN', image: 'https://upload.wikimedia.org/wikipedia/commons/0/0d/Nissan_Logo.svg' },
   { name: 'RPL', image: '/logos/Logo_RPL.avif' },
-  { name: 'YAMAHA', image: 'https://upload.wikimedia.org/wikipedia/commons/8/8b/Yamaha_Motor_Logo.svg' },
-  { name: 'SUZUKI', image: 'https://upload.wikimedia.org/wikipedia/commons/1/12/Suzuki_logo_2.svg' },
-  { name: 'TOYOTA', image: 'https://upload.wikimedia.org/wikipedia/commons/e/ee/Toyota_Logo.svg' },
-  { name: 'DAIHATSU', image: 'https://upload.wikimedia.org/wikipedia/commons/d/df/Daihatsu_logo.svg' },
-  { name: 'MITSUBISHI', image: 'https://upload.wikimedia.org/wikipedia/commons/b/b7/Mitsubishi-logo.png' },
-  { name: 'BYD', image: 'https://upload.wikimedia.org/wikipedia/commons/1/19/BYD_Auto_Logo.svg' }
+  { name: 'HONDA', image: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Honda_Logo.svg' },
+  { name: 'NISSAN', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/nissan.svg' },
+  { name: 'YAMAHA', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/yamahamotorcorporation.svg' },
+  { name: 'SUZUKI', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/suzuki.svg' },
+  { name: 'KTM', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ktm.svg' },
+  { name: 'MAZDA', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/mazda.svg' },
+  { name: 'FORD', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/ford.svg' },
+  { name: 'CHEVROLET', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/chevrolet.svg' },
+  { name: 'TOYOTA', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/toyota.svg' },
+  { name: 'MITSUBISHI', image: 'https://cdn.jsdelivr.net/npm/simple-icons@latest/icons/mitsubishi.svg' },
 ];

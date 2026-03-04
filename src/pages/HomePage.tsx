@@ -30,7 +30,7 @@ export function HomePage() {
   const navigate = useNavigate();
   const featured = getFeaturedProducts();
 
-  const learnMoreText = locale === 'en' ? 'Learn More' : 'Pelajari Selengkapnya';
+  const learnMoreText = locale === 'en' ? 'Learn More' : 'Lihat Detail';
 
   return (
     <div className="overflow-hidden">
@@ -66,17 +66,17 @@ export function HomePage() {
           <div className="relative flex overflow-x-hidden">
             <motion.div 
               className="flex gap-20 items-center whitespace-nowrap"
-              animate={{ x: [0, -1000] }}
+              animate={{ x: ['0%', '-50%'] }}
               transition={{ 
                 repeat: Infinity, 
                 duration: 30, 
                 ease: "linear" 
               }}
             >
-              {[...clientLogos, ...clientLogos, ...clientLogos].map((client, idx) => (
+              {[...clientLogos, ...clientLogos].map((client, idx) => (
                 <div
                   key={`${client.name}-${idx}`}
-                  className="flex items-center justify-center grayscale opacity-40 hover:opacity-100 transition-all duration-300 w-32 shrink-0"
+                  className="flex items-center justify-center grayscale hover:grayscale-0 opacity-40 hover:opacity-100 transition-all duration-300 w-32 shrink-0"
                 >
                   <img
                     src={client.image}

@@ -6,7 +6,7 @@ import {
   Navigate,
   useNavigationType,
 } from 'react-router-dom';
-import { useEffect, useLayoutEffect } from 'react';
+import React, { useEffect, useLayoutEffect } from 'react';
 import { LocaleProvider, useLocale } from '@/i18n/LocaleContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,39 +16,50 @@ import { ProductsPage } from '@/pages/ProductsPage';
 import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
-/**
- * Scroll behavior:
- * - PUSH → scroll to top
- * - POP / Refresh → restore instantly (no visible jump)
- */
 function ScrollManager() {
-  const { pathname } = useLocation();
+  const location = useLocation();
   const navigationType = useNavigationType();
+  const pathname = location.pathname;
+
+  const routeKey = pathname.replace(/^\/(en|id)/, '');
+
+  const previousRouteRef = React.useRef(routeKey);
 
   // Save scroll continuously
   useEffect(() => {
     const handleScroll = () => {
       sessionStorage.setItem(
-        `scroll-${pathname}`,
+        `scroll-${routeKey}`,
         String(window.scrollY)
       );
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [pathname]);
+  }, [routeKey]);
 
-  // Restore BEFORE paint (prevents visual jump)
   useLayoutEffect(() => {
+    const previousRoute = previousRouteRef.current;
+    const saved = sessionStorage.getItem(`scroll-${routeKey}`);
+
+    const isSamePageDifferentLocale =
+      previousRoute === routeKey;
+
     if (navigationType === 'PUSH') {
-      window.scrollTo(0, 0);
-    } else {
-      const saved = sessionStorage.getItem(`scroll-${pathname}`);
-      if (saved) {
-        window.scrollTo(0, parseInt(saved));
+      if (isSamePageDifferentLocale) {
+        // Language switch → restore
+        if (saved) window.scrollTo(0, parseInt(saved));
+      } else {
+        // Real route change → go to top
+        window.scrollTo(0, 0);
       }
+    } else {
+      // POP or Refresh → restore
+      if (saved) window.scrollTo(0, parseInt(saved));
     }
-  }, [pathname, navigationType]);
+
+    previousRouteRef.current = routeKey;
+  }, [routeKey, navigationType]);
 
   return null;
 }
@@ -68,6 +79,7 @@ function AppLayout() {
 
         <main className="flex-1">
           <Routes>
+            {/* Root redirect */}
             <Route path="/" element={<LocaleRedirect />} />
 
             {/* English Routes */}
@@ -81,7 +93,7 @@ function AppLayout() {
             <Route path="/id/about" element={<AboutPage />} />
             <Route path="/id/products" element={<ProductsPage />} />
             <Route path="/id/contact" element={<ContactPage />} />
-
+            
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
@@ -91,7 +103,6 @@ function AppLayout() {
     </>
   );
 }
-
 export default function App() {
   return (
     <Router>
