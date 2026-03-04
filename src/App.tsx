@@ -6,7 +6,7 @@ import {
   Navigate,
   useNavigationType,
 } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { LocaleProvider, useLocale } from '@/i18n/LocaleContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -16,10 +16,16 @@ import { ProductsPage } from '@/pages/ProductsPage';
 import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
+/**
+ * Scroll behavior:
+ * - PUSH → scroll to top
+ * - POP / Refresh → restore instantly (no visible jump)
+ */
 function ScrollManager() {
   const { pathname } = useLocation();
   const navigationType = useNavigationType();
 
+  // Save scroll continuously
   useEffect(() => {
     const handleScroll = () => {
       sessionStorage.setItem(
@@ -29,21 +35,17 @@ function ScrollManager() {
     };
 
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [pathname]);
 
-  useEffect(() => {
+  // Restore BEFORE paint (prevents visual jump)
+  useLayoutEffect(() => {
     if (navigationType === 'PUSH') {
       window.scrollTo(0, 0);
     } else {
       const saved = sessionStorage.getItem(`scroll-${pathname}`);
       if (saved) {
-        setTimeout(() => {
-          window.scrollTo(0, parseInt(saved));
-        }, 50);
+        window.scrollTo(0, parseInt(saved));
       }
     }
   }, [pathname, navigationType]);
