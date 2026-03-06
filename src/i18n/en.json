@@ -5,17 +5,58 @@
     "products": "Products",
     "contact": "Contact"
   },
+
   "hero": {
     "title": "PT Cipta Metalindo Persada",
     "subtitle": "Leading Manufacturer of Premium Metal Components & Industrial Solutions",
     "cta": "Learn More"
   },
+
   "home": {
     "trustedBy": "Trusted By Leading Brands",
+
     "featuredProducts": "Featured Products",
     "featuredDesc": "Discover our range of high-quality metal components engineered for excellence",
-    "viewAll": "View All Products"
+    "viewAll": "View All Products",
+
+    "stats": {
+      "years": "Years Experience",
+      "clients": "Industrial Clients",
+      "products": "Products Manufactured",
+      "certified": "ISO Certified"
+    },
+
+    "capabilities": {
+      "title": "Manufacturing Capabilities",
+      "subtitle": "Advanced production systems and engineering expertise allow us to manufacture reliable industrial components at scale.",
+      "precisionTitle": "Precision Machining",
+      "precisionDesc": "CNC milling and turning with high-tolerance precision manufacturing.",
+      "fabricationTitle": "Custom Fabrication",
+      "fabricationDesc": "Tailored metal components based on client specifications.",
+      "qualityTitle": "Quality Assurance",
+      "qualityDesc": "Strict inspection processes ensuring compliance with international standards.",
+      "productionTitle": "Mass Production",
+      "productionDesc": "Efficient large-scale production for industrial supply chains."
+    },
+
+    "story": {
+      "engineeringTitle": "Engineering Excellence",
+      "engineeringDesc": "Our engineering team collaborates closely with clients to transform requirements into manufacturable designs.",
+
+      "machineryTitle": "Advanced Machinery",
+      "machineryDesc": "Modern CNC equipment and automated production systems deliver consistent precision.",
+
+      "qualityTitle": "Strict Quality Control",
+      "qualityDesc": "Every component undergoes rigorous inspection before reaching our clients."
+    },
+
+    "cta": {
+      "title": "Ready to Partner With Us?",
+      "desc": "Contact our engineering team to discuss your manufacturing requirements.",
+      "button": "Contact Us"
+    }
   },
+  
   "about": {
     "heroTitle": "About Us",
     "heroSubtitle": "Building Excellence Since 1995",
@@ -105,7 +146,7 @@
   },
   "footer": {
     "description": "Leading manufacturer of premium metal components and industrial solutions in Southeast Asia.",
-    "quickLinks": "Quick Links",
+    "navigation": "Navigate",
     "contactInfo": "Contact Info",
     "location": "Our Location",
     "rights": "All rights reserved.",

@@ -34,5 +34,6 @@ export interface ContactInfo {
   email: string;
   phone: string;
   address: LocalizedField;
+  googleMapsUrl: string;
   mapEmbedUrl: string;
 }

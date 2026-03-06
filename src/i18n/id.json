@@ -5,17 +5,62 @@
     "products": "Produk",
     "contact": "Kontak"
   },
+
   "hero": {
     "title": "PT Cipta Metalindo Persada",
-    "subtitle": "Produsen Terkemuka Komponen Metal Premium & Solusi Industri",
-    "cta": "Lihat Detail"
+    "subtitle": "Produsen Komponen Logam Premium & Solusi Industri",
+    "cta": "Pelajari Lebih Lanjut"
   },
+
   "home": {
-    "trustedBy": "Dipercaya Oleh Merek Terkemuka",
+    "trustedBy": "Dipercaya Oleh Perusahaan Terkemuka",
+
     "featuredProducts": "Produk Unggulan",
-    "featuredDesc": "Temukan rangkaian komponen metal berkualitas tinggi yang dirancang untuk keunggulan",
-    "viewAll": "Lihat Semua Produk"
+    "featuredDesc": "Temukan berbagai komponen logam berkualitas tinggi yang dirancang untuk performa terbaik",
+    "viewAll": "Lihat Semua Produk",
+
+    "stats": {
+      "years": "Tahun Pengalaman",
+      "clients": "Klien Industri",
+      "products": "Produk Diproduksi",
+      "certified": "Sertifikasi ISO"
+    },
+
+    "capabilities": {
+      "title": "Kapabilitas Manufaktur",
+      "subtitle": "Teknologi produksi modern dan keahlian engineering memungkinkan kami memproduksi komponen industri secara presisi dan skala besar.",
+
+      "precisionTitle": "Precision Machining",
+      "precisionDesc": "Proses CNC milling dan turning dengan presisi tinggi.",
+
+      "fabricationTitle": "Custom Fabrication",
+      "fabricationDesc": "Komponen logam yang dirancang sesuai kebutuhan klien.",
+
+      "qualityTitle": "Quality Assurance",
+      "qualityDesc": "Proses inspeksi ketat sesuai standar internasional.",
+
+      "productionTitle": "Mass Production",
+      "productionDesc": "Produksi skala besar untuk rantai pasok industri."
+    },
+
+    "story": {
+      "engineeringTitle": "Keunggulan Engineering",
+      "engineeringDesc": "Tim engineering kami bekerja sama dengan klien untuk mengubah kebutuhan menjadi desain manufaktur yang efisien.",
+
+      "machineryTitle": "Mesin Modern",
+      "machineryDesc": "Peralatan CNC modern dan sistem produksi otomatis memberikan presisi tinggi.",
+
+      "qualityTitle": "Kontrol Kualitas Ketat",
+      "qualityDesc": "Setiap komponen melalui inspeksi ketat sebelum dikirim ke klien."
+    },
+
+    "cta": {
+      "title": "Siap Bekerja Sama Dengan Kami?",
+      "desc": "Hubungi tim engineering kami untuk mendiskusikan kebutuhan manufaktur Anda.",
+      "button": "Hubungi Kami"
+    }
   },
+  
   "about": {
     "heroTitle": "Tentang Kami",
     "heroSubtitle": "Membangun Keunggulan Sejak 1995",
@@ -105,7 +150,7 @@
   },
   "footer": {
     "description": "Produsen terkemuka komponen metal premium dan solusi industri di Asia Tenggara.",
-    "quickLinks": "Tautan Cepat",
+    "navigation": "Navigasi",
     "contactInfo": "Info Kontak",
     "location": "Lokasi Kami",
     "rights": "Hak cipta dilindungi.",

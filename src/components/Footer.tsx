@@ -1,125 +1,224 @@
-import { Link } from 'react-router-dom';
-import { useLocale } from '@/i18n/LocaleContext';
-import { AnimatedSection } from '@/components/AnimatedSection';
-import { contactInfo } from '@/cms/contact';
+import { Link } from 'react-router-dom'
+import { useLocale } from '@/i18n/LocaleContext'
+import { AnimatedSection } from '@/components/AnimatedSection'
+import { contactInfo } from '@/cms/contact'
+
+import {
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
+  ClockIcon
+} from '@heroicons/react/24/outline'
 
 export function Footer() {
-  const { locale, t } = useLocale();
+  const { locale, t } = useLocale()
 
   const quickLinks = [
     { label: t.nav.home, path: `/${locale}` },
     { label: t.nav.about, path: `/${locale}/about` },
     { label: t.nav.products, path: `/${locale}/products` },
-    { label: t.nav.contact, path: `/${locale}/contact` },
-  ];
+    { label: t.nav.contact, path: `/${locale}/contact` }
+  ]
 
   return (
     <footer className="bg-[#0B2A59] text-white relative overflow-hidden">
-      {/* Decorative background */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white/[0.02] rounded-full -translate-y-1/2 translate-x-1/3" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/[0.02] rounded-full translate-y-1/3 -translate-x-1/4" />
 
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 py-12 lg:py-16 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Company Info */}
-          <AnimatedSection animation="fade-up" className="lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFFFFF] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md overflow-hidden">
-              <img
-                src= "/logos/Logo_CMP.png"
-                alt="CMP"
-                loading="eager"
-                className="h-10 w-auto object-contain"
-              />
-            </div>
-              <div>
-                <div className="text-sm font-bold tracking-wide">CMP</div>
-                <div className="text-[9px] text-blue-200">CIPTA METALINDO PERSADA</div>
+      {/* subtle background shapes */}
+      <div className="absolute top-0 right-0 w-[420px] h-[420px] bg-white/[0.03] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+      <div className="absolute bottom-0 left-0 w-[360px] h-[360px] bg-white/[0.02] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
+
+      <div className="relative mx-auto max-w-[1200px] px-6 py-16">
+
+        {/* MAIN FOOTER GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+
+          {/* COMPANY */}
+          <AnimatedSection
+            animation="fade-up"
+            className="lg:col-span-4"
+          >
+
+            <div className="flex items-center gap-3 mb-6">
+
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white shadow-md overflow-hidden">
+                <img
+                  src="/logos/Logo_CMP.png"
+                  alt="CMP"
+                  className="h-10 w-auto object-contain"
+                />
               </div>
+
+              <div>
+                <div className="text-base font-bold tracking-wide">
+                  CMP
+                </div>
+
+                <div className="text-[11px] text-blue-200 tracking-wider">
+                  CIPTA METALINDO PERSADA
+                </div>
+              </div>
+
             </div>
-            <p className="text-sm text-blue-200 leading-relaxed">
+
+            <p className="text-sm text-blue-200 leading-relaxed max-w-sm">
               {t.footer.description}
             </p>
+
           </AnimatedSection>
 
-          {/* Quick Links */}
-          <AnimatedSection animation="fade-up" delay={100}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-blue-300">
-              {t.footer.quickLinks}
+          {/* NAVIGATION */}
+          <AnimatedSection
+            animation="fade-up"
+            delay={100}
+            className="lg:col-span-2"
+          >
+
+            <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-300 mb-6">
+              {t.footer.navigation}
             </h3>
-            <ul className="space-y-2.5">
+
+            <ul className="space-y-3">
+
               {quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-sm text-blue-200 hover:text-white transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
+                    className="
+                    text-sm text-blue-200
+                    hover:text-white
+                    transition-colors
+                    duration-200
+                    "
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
+
             </ul>
+
           </AnimatedSection>
 
-          {/* Contact Info */}
-          <AnimatedSection animation="fade-up" delay={200}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-blue-300">
+          {/* CONTACT */}
+          <AnimatedSection
+            animation="fade-up"
+            delay={200}
+            className="lg:col-span-3"
+          >
+
+            <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-300 mb-6">
               {t.footer.contactInfo}
             </h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2.5">
-                <svg className="w-4 h-4 mt-0.5 text-blue-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm text-blue-200">{contactInfo.email}</span>
+
+            <ul className="space-y-4">
+
+              <li className="flex items-start gap-3">
+
+                <EnvelopeIcon className="w-4 h-4 mt-[3px] text-blue-300" />
+
+                <a
+                  href={`mailto:${contactInfo.email}`}
+                  className="text-sm text-blue-200 hover:text-white transition"
+                >
+                  {contactInfo.email}
+                </a>
+
               </li>
-              <li className="flex items-start gap-2.5">
-                <svg className="w-4 h-4 mt-0.5 text-blue-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <span className="text-sm text-blue-200">{contactInfo.phone}</span>
+
+              <li className="flex items-start gap-3">
+
+                <PhoneIcon className="w-4 h-4 mt-[3px] text-blue-300" />
+
+                <a
+                  href={`tel:${contactInfo.phone}`}
+                  className="text-sm text-blue-200 hover:text-white transition"
+                >
+                  {contactInfo.phone}
+                </a>
+
               </li>
-              <li className="flex items-start gap-2.5">
-                <svg className="w-4 h-4 mt-0.5 text-blue-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span className="text-sm text-blue-200 leading-relaxed">{contactInfo.address[locale]}</span>
+
+              <li className="flex items-start gap-3">
+
+                <MapPinIcon className="w-4 h-4 mt-0.5 text-blue-300 shrink-0 group-hover:text-white transition-colors" />
+
+                <a
+                  href={contactInfo.googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-200 hover:text-white transition leading-relaxed"
+                >
+                  {contactInfo.address[locale]}
+                </a>
+
               </li>
+
+              <li className="flex items-start gap-3">
+
+                <ClockIcon className="w-4 h-4 mt-[3px] text-blue-300" />
+
+                <span className="text-sm text-blue-200">
+                  Mon – Fri : 08:00 – 17:00
+                </span>
+
+              </li>
+
             </ul>
+
           </AnimatedSection>
 
-          {/* Map */}
-          <AnimatedSection animation="fade-up" delay={300}>
-            <h3 className="text-sm font-semibold uppercase tracking-wider mb-4 text-blue-300">
+          {/* MAP */}
+          <AnimatedSection
+            animation="fade-up"
+            delay={300}
+            className="lg:col-span-3"
+          >
+
+            <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-300 mb-6">
               {t.footer.location}
             </h3>
-            <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg hover:border-white/20 transition-colors duration-300">
+
+            <div className="rounded-xl overflow-hidden border border-white/10 shadow-md">
+
               <iframe
                 src={contactInfo.mapEmbedUrl}
                 width="100%"
-                height="160"
+                height="180"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
                 title="CMP Location"
               />
+
             </div>
+
           </AnimatedSection>
+
         </div>
 
-        {/* Bottom */}
-        <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* BOTTOM */}
+        <div className="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
+
           <p className="text-xs text-blue-300">
             © {new Date().getFullYear()} PT Cipta Metalindo Persada. {t.footer.rights}
           </p>
-          <div className="flex gap-6">
-            <button className="text-xs text-blue-300 hover:text-white transition-colors duration-300">{t.footer.privacy}</button>
-            <button className="text-xs text-blue-300 hover:text-white transition-colors duration-300">{t.footer.terms}</button>
+
+          <div className="flex items-center gap-6 text-xs text-blue-300">
+
+            <button className="hover:text-white transition">
+              {t.footer.privacy}
+            </button>
+
+            <button className="hover:text-white transition">
+              {t.footer.terms}
+            </button>
+
           </div>
+
         </div>
+
       </div>
+
     </footer>
-  );
+  )
 }
