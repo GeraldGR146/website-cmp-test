@@ -330,7 +330,7 @@ export function AboutPage() {
               : 'Mari diskusikan bagaimana kami dapat mewujudkan visi manufaktur Anda dengan presisi dan kualitas.'}
           </p>
 
-          {/* ✅ BUTTON CONTAINER */}
+          {/* BUTTON CONTAINER */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
             <Link
               to={`/${locale}/contact`}
