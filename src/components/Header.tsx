@@ -62,7 +62,7 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to={`/${locale}`} className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffffff] group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-md overflow-hidden">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffffff]">
               <img
                 src="/logos/Logo_CMP.png"
                 alt="CMP"
