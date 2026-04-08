@@ -59,7 +59,26 @@ export function Header() {
                 src="/logos/Logo_CMP.png"
                 alt="CMP"
                 loading="eager"
-                className="w-35 h-35 object-contain transition-transform hover:scale-110 duration-300"
+                className="
+                  block dark:hidden
+                  w-32 md:w-36
+                  h-auto object-contain
+                  transition-transform duration-300
+                  hover:scale-110
+                "
+              />
+
+              <img
+                src="/logos/Logo_CMP_white.png"
+                alt="CMP"
+                loading="eager"
+                className="
+                  hidden dark:block
+                  w-32 md:w-36
+                  h-auto object-contain
+                  transition-transform duration-300
+                  hover:scale-110
+                "
               />
             </div>
 

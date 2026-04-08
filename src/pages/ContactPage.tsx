@@ -8,16 +8,20 @@ export function ContactPage() {
 
   return (
     <div className="pt-16 page-enter min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50">
-      {/* Centered CMP Logo + Title */}
       <section className="pt-16 pb-10">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center">
           <AnimatedSection animation="scale-up">
-            <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-[#FFFFFF] shadow-2xl shadow-[#0B2A59]/30 mb-6">
+            <div className="flex justify-center items-center py-16">
               <img
                 src="/logos/Logo_CMP.png"
                 alt="CMP"
-                loading="eager"
-                className="p-1"
+                className="block dark:hidden w-[240px] md:w-[280px] lg:w-[320px] h-auto object-contain"
+              />
+              
+              <img
+                src="/logos/Logo_CMP_white.png"
+                alt="CMP"
+                className="hidden dark:block w-[240px] md:w-[280px] lg:w-[320px] h-auto object-contain"
               />
             </div>
           </AnimatedSection>
