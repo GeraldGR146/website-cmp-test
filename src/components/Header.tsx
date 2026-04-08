@@ -1,6 +1,7 @@
 import { useLocale, type Locale } from '@/i18n/LocaleContext';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence, type Easing } from 'framer-motion';
 
 export function Header() {
   const { locale, setLocale, t } = useLocale();
@@ -8,6 +9,66 @@ export function Header() {
   const navigate = useNavigate();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAtTop, setIsAtTop] = useState(true);
+  const [visible, setVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  const lastScrollY = useRef(0);
+
+  const isContactPage = location.pathname.includes('/contact');
+
+  // ✅ FIXED EASING (Type-safe)
+  const EASE: Easing = [0.25, 0.1, 0.25, 1];
+  const DURATION = 0.45;
+
+  // 🌙 Detect dark mode
+  useEffect(() => {
+    const checkDark = () => {
+      const isDark =
+        document.documentElement.classList.contains('dark') ||
+        window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      setIsDarkMode(isDark);
+    };
+
+    checkDark();
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', checkDark);
+
+    return () => media.removeEventListener('change', checkDark);
+  }, []);
+
+  // 🧠 Scroll logic
+  useEffect(() => {
+    const handleScroll = () => {
+      const y = window.scrollY;
+
+      setIsAtTop(y < 40);
+      setScrolled(y > 80);
+
+      if (y > lastScrollY.current && y > 140) {
+        setVisible(false);
+      } else {
+        setVisible(true);
+      }
+
+      lastScrollY.current = y;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 🔒 Lock scroll on mobile menu
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
+  }, [mobileMenuOpen]);
+
+  // 🎯 Logo logic
+  const useWhiteLogo =
+    !isContactPage && (isAtTop || isDarkMode);
 
   const navItems = [
     { label: t.nav.home, path: `/${locale}` },
@@ -35,201 +96,254 @@ export function Header() {
     }
 
     segments[0] = newLocale;
-    const newPath = `/${segments.join('/')}`;
-
+    navigate(`/${segments.join('/')}`, { replace: true });
     setLocale(newLocale);
-    navigate(newPath, { replace: true });
   };
 
+  // 🎯 Header background logic (FIXED for contact page)
+  const headerBg = isContactPage
+    ? 'rgba(255,255,255,1)'
+    : isAtTop
+    ? 'rgba(255,255,255,0)'
+    : 'rgba(255,255,255,0.75)';
+
+  const headerDarkBg = isContactPage
+    ? 'rgba(11,31,58,1)'
+    : 'rgba(11,31,58,0.8)';
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-blue-100 shadow-md">
-      {/* Top accent line */}
-      <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700"></div>
-
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-        <div className="flex h-20 items-center justify-between">
-          {/* Logo Section */}
-          <Link
-            to={`/${locale}`}
-            className="group flex items-center gap-4 flex-shrink-0"
-          >
-            {/* Clean Logo Box */}
-            <div>
-              <img
-                src="/logos/Logo_CMP.png"
-                alt="CMP"
-                loading="eager"
-                className="
-                  block dark:hidden
-                  w-32 md:w-36
-                  h-auto object-contain
-                  transition-transform duration-300
-                  hover:scale-110
-                "
-              />
-
-              <img
-                src="/logos/Logo_CMP_white.png"
-                alt="CMP"
-                loading="eager"
-                className="
-                  hidden dark:block
-                  w-32 md:w-36
-                  h-auto object-contain
-                  transition-transform duration-300
-                  hover:scale-110
-                "
-              />
-            </div>
-
-            {/* Brand Text */}
-            <div className="flex flex-col justify-center min-w-0">
-              <span className="text-lg font-bold text-blue-900 tracking-tight leading-none sm:text-xl">
-                <span className="inline sm:hidden">CMP</span>
-                <span className="hidden sm:inline">CIPTA METALINDO PERSADA</span>
-              </span>
-              <span className="text-[9px] text-blue-600 uppercase tracking-widest font-semibold mt-0.5 truncate">
-                <span className="inline sm:hidden">CIPTA METALINDO PERSADA</span>
-                <span className="hidden sm:inline">{t.nav.tagline}</span>
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`relative text-sm font-bold uppercase tracking-wide transition-all duration-300 pb-2 ${
-                  isActive(item.path)
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-700 hover:text-blue-600 border-b-2 border-transparent'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-4">
-            {/* Locale Switcher */}
-            <div className="hidden sm:flex items-center gap-0 border-2 border-blue-600 rounded-lg overflow-hidden bg-white">
-              <button
-                onClick={() => switchLocale('en')}
-                className={`px-4 py-2 text-xs font-bold uppercase transition-all duration-300 border-r border-blue-600 ${
-                  locale === 'en'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-blue-600 hover:bg-blue-50'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => switchLocale('id')}
-                className={`px-4 py-2 text-xs font-bold uppercase transition-all duration-300 ${
-                  locale === 'id'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-blue-600 hover:bg-blue-50'
-                }`}
-              >
-                ID
-              </button>
-            </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden w-11 h-11 border-2 border-blue-600 bg-white flex items-center justify-center hover:bg-blue-50 transition-all duration-300 rounded-lg"
-            >
-              <div className="w-5 h-4 relative flex flex-col justify-between">
-                <span
-                  className={`w-full h-0.5 bg-blue-600 transition-all duration-300 origin-center ${
-                    mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
-                  }`}
-                />
-                <span
-                  className={`w-full h-0.5 bg-blue-600 transition-opacity duration-300 ${
-                    mobileMenuOpen ? 'opacity-0' : ''
-                  }`}
-                />
-                <span
-                  className={`w-full h-0.5 bg-blue-600 transition-all duration-300 origin-center ${
-                    mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
-                  }`}
-                />
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
+    <>
+      {/* HEADER */}
+      <motion.header
+        initial={false}
+        animate={{
+          y: visible ? 0 : -90,
+          backdropFilter:
+            isAtTop && !isContactPage ? 'blur(0px)' : 'blur(16px)',
+          backgroundColor: isDarkMode ? headerDarkBg : headerBg,
+        }}
+        transition={{ duration: DURATION, ease: EASE }}
+        className="
+          fixed top-0 left-0 right-0 z-50
+          border-b border-black/5 dark:border-white/10
+          will-change-transform
+        "
+      >
+        {/* Accent line */}
         <div
-          className={`lg:hidden overflow-hidden transition-all duration-500 border-t border-blue-200 bg-gradient-to-b from-blue-50 to-white ${
-            mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="px-4 py-6 space-y-0">
-            {navItems.map((item, idx) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full px-4 py-3 text-sm font-bold uppercase tracking-wide border-l-2 transition-all duration-300 ${
-                  isActive(item.path)
-                    ? 'border-blue-600 bg-blue-100 text-blue-700'
-                    : 'border-gray-300 text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600'
-                }`}
-                style={{
-                  animationDelay: mobileMenuOpen ? `${idx * 75}ms` : '0ms',
-                  animation: mobileMenuOpen ? 'slideInLeft 0.4s ease-out forwards' : 'none',
-                }}
-              >
-                {item.label}
-              </Link>
-            ))}
+          className={`
+            bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700
+            transition-all duration-500
+            ${
+              isContactPage
+                ? 'h-[2px]'
+                : isAtTop
+                ? 'h-0 opacity-0'
+                : 'h-[2px]'
+            }
+          `}
+        />
 
-            <div className="border-t border-blue-200 mt-6 pt-6">
-              <div className="flex gap-0">
+        <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+          <div
+            className={`flex items-center justify-between ${
+              scrolled ? 'h-16' : 'h-20'
+            }`}
+          >
+            {/* LOGO */}
+            <Link to={`/${locale}`} className="flex items-center gap-4">
+              <motion.img
+                src={
+                  useWhiteLogo
+                    ? '/logos/Logo_CMP_white.png'
+                    : '/logos/Logo_CMP.png'
+                }
+                animate={{
+                  scale: scrolled ? 0.9 : 1,
+                }}
+                transition={{ duration: DURATION, ease: EASE }}
+                className="w-32"
+              />
+
+              <div className="hidden sm:flex flex-col">
+                <span
+                  className={`
+                    font-bold tracking-tight
+                    ${
+                      isContactPage
+                        ? 'text-blue-900 dark:text-white'
+                        : isAtTop
+                        ? 'text-white'
+                        : 'text-blue-900 dark:text-white'
+                    }
+                  `}
+                >
+                  CIPTA METALINDO PERSADA
+                </span>
+
+                <span
+                  className={`
+                    text-[10px] uppercase tracking-widest
+                    ${
+                      isContactPage
+                        ? 'text-blue-600 dark:text-white/60'
+                        : isAtTop
+                        ? 'text-white/70'
+                        : 'text-blue-600 dark:text-white/60'
+                    }
+                  `}
+                >
+                  {t.nav.tagline}
+                </span>
+              </div>
+            </Link>
+
+            {/* DESKTOP NAV */}
+            <nav className="hidden lg:flex items-center gap-6">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`
+                    text-sm font-bold uppercase transition-all duration-300
+                    ${
+                      isActive(item.path)
+                        ? 'text-blue-600 dark:text-blue-400'
+                        : isContactPage
+                        ? 'text-gray-700 dark:text-white/70 hover:text-blue-600'
+                        : isAtTop
+                        ? 'text-white/80 hover:text-white'
+                        : 'text-gray-700 dark:text-white/70 hover:text-blue-600'
+                    }
+                  `}
+                >
+                  {item.label}
+                </Link>
+              ))}
+
+              {/* LOCALE SWITCHER */}
+              <div
+                className={`
+                  ml-4 flex rounded-lg overflow-hidden border
+                  ${
+                    isContactPage
+                      ? 'border-blue-600 dark:border-white/20'
+                      : isAtTop
+                      ? 'border-white/30'
+                      : 'border-blue-600 dark:border-white/20'
+                  }
+                `}
+              >
                 <button
                   onClick={() => switchLocale('en')}
-                  className={`flex-1 px-4 py-3 text-xs font-bold uppercase tracking-wider border-2 border-blue-600 transition-all duration-300 rounded-l-lg ${
+                  className={`px-3 py-1 text-xs font-bold ${
                     locale === 'en'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white text-blue-600 hover:bg-blue-50'
+                      : isContactPage
+                      ? 'text-blue-600 dark:text-white'
+                      : isAtTop
+                      ? 'text-white'
+                      : 'text-blue-600 dark:text-white'
                   }`}
                 >
                   EN
                 </button>
                 <button
                   onClick={() => switchLocale('id')}
-                  className={`flex-1 px-4 py-3 text-xs font-bold uppercase tracking-wider border-2 border-l-0 border-blue-600 transition-all duration-300 rounded-r-lg ${
+                  className={`px-3 py-1 text-xs font-bold ${
                     locale === 'id'
                       ? 'bg-blue-600 text-white'
-                      : 'bg-white text-blue-600 hover:bg-blue-50'
+                      : isContactPage
+                      ? 'text-blue-600 dark:text-white'
+                      : isAtTop
+                      ? 'text-white'
+                      : 'text-blue-600 dark:text-white'
                   }`}
                 >
                   ID
                 </button>
               </div>
-            </div>
+            </nav>
+
+            {/* MOBILE BUTTON */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className={`
+                lg:hidden w-10 h-10 flex items-center justify-center rounded-xl
+                transition-all duration-300
+                ${
+                  isContactPage
+                    ? 'border border-blue-600 text-blue-600 dark:text-white'
+                    : isAtTop
+                    ? 'border border-white/30 text-white'
+                    : 'border border-blue-600 text-blue-600 dark:text-white'
+                }
+              `}
+            >
+              ☰
+            </button>
           </div>
         </div>
-      </div>
+      </motion.header>
 
-      <style>{`
-        @keyframes slideInLeft {
-          from {
-            opacity: 0;
-            transform: translateX(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
-    </header>
+      {/* MOBILE MENU */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -10 }}
+              transition={{ duration: DURATION, ease: EASE }}
+              className="fixed top-[80px] left-4 right-4 z-50 rounded-2xl bg-white/90 dark:bg-[#0B1F3A]/90 backdrop-blur-xl shadow-2xl"
+            >
+              <div className="p-6 space-y-2">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block px-4 py-3 rounded-xl text-sm font-semibold uppercase text-gray-800 dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+
+                <div className="pt-4 flex gap-2">
+                  <button
+                    onClick={() => switchLocale('en')}
+                    className={`flex-1 py-2 rounded ${
+                      locale === 'en'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-white/10'
+                    }`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => switchLocale('id')}
+                    className={`flex-1 py-2 rounded ${
+                      locale === 'id'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 dark:bg-white/10'
+                    }`}
+                  >
+                    ID
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

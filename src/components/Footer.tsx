@@ -8,7 +8,7 @@ import {
   ClockIcon,
   EnvelopeIcon,
   MapPinIcon,
-  PhoneIcon
+  PhoneIcon 
 } from '@heroicons/react/24/outline'
 
 export function Footer() {
@@ -24,7 +24,7 @@ export function Footer() {
   return (
     <footer className="bg-[#0B2A59] text-white relative overflow-hidden">
 
-      {/* refined subtle background */}
+      {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.025] rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-white/[0.02] rounded-full blur-3xl translate-y-1/3 -translate-x-1/4" />
@@ -32,33 +32,42 @@ export function Footer() {
 
       <div className="relative mx-auto max-w-[1200px] px-6 py-20">
 
-        {/* GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-14 gap-x-10">
-
-          {/* COMPANY */}
-          <AnimatedSection animation="fade-up" className="lg:col-span-5">
+        {/* 🔥 LOGO HERO (MATCH CONTACT PAGE) */}
+        <AnimatedSection animation="scale-up">
+          <div className="flex flex-col items-center text-center mb-16">
 
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.6 }}
               className="mb-6"
             >
               <img
                 src="/logos/Logo_CMP_white.png"
                 alt="CMP"
-                className="w-44 h-auto object-contain"
+                className="
+                  w-[200px] md:w-[240px] lg:w-[260px]
+                  h-auto object-contain
+                  drop-shadow-[0_10px_30px_rgba(0,0,0,0.4)]
+                "
               />
             </motion.div>
 
-            <p className="text-sm text-white/70 leading-relaxed max-w-sm">
+            <p className="text-sm text-white/60 max-w-md leading-relaxed">
               {t.footer.description}
             </p>
 
-          </AnimatedSection>
+          </div>
+        </AnimatedSection>
+
+        {/* Divider */}
+        <div className="border-t border-white/10 mb-14" />
+
+        {/* GRID */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-y-12 gap-x-10">
 
           {/* NAVIGATION */}
-          <AnimatedSection animation="fade-up" delay={100} className="lg:col-span-2">
+          <AnimatedSection animation="fade-up" className="lg:col-span-3">
 
             <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40 mb-6">
               {t.footer.navigation}
@@ -86,7 +95,7 @@ export function Footer() {
           </AnimatedSection>
 
           {/* CONTACT */}
-          <AnimatedSection animation="fade-up" delay={200} className="lg:col-span-3">
+          <AnimatedSection animation="fade-up" delay={100} className="lg:col-span-4">
 
             <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40 mb-6">
               {t.footer.contactInfo}
@@ -96,32 +105,21 @@ export function Footer() {
 
               <li className="flex items-start gap-3 group">
                 <EnvelopeIcon className="w-4 h-4 mt-[3px] text-white/40 group-hover:text-white transition" />
-                <a
-                  href={`mailto:${contactInfo.email}`}
-                  className="text-sm text-white/70 group-hover:text-white transition"
-                >
+                <a href={`mailto:${contactInfo.email}`} className="text-sm text-white/70 group-hover:text-white transition">
                   {contactInfo.email}
                 </a>
               </li>
 
               <li className="flex items-start gap-3 group">
                 <PhoneIcon className="w-4 h-4 mt-[3px] text-white/40 group-hover:text-white transition" />
-                <a
-                  href={`tel:${contactInfo.phone}`}
-                  className="text-sm text-white/70 group-hover:text-white transition"
-                >
+                <a href={`tel:${contactInfo.phone}`} className="text-sm text-white/70 group-hover:text-white transition">
                   {contactInfo.phone}
                 </a>
               </li>
 
               <li className="flex items-start gap-3 group">
                 <MapPinIcon className="w-4 h-4 mt-0.5 text-white/40 shrink-0 group-hover:text-white transition" />
-                <a
-                  href={contactInfo.googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-white/70 group-hover:text-white transition leading-relaxed"
-                >
+                <a href={contactInfo.googleMapsUrl} target="_blank" rel="noopener noreferrer" className="text-sm text-white/70 group-hover:text-white transition leading-relaxed">
                   {contactInfo.address[locale]}
                 </a>
               </li>
@@ -138,7 +136,7 @@ export function Footer() {
           </AnimatedSection>
 
           {/* MAP */}
-          <AnimatedSection animation="fade-up" delay={300} className="lg:col-span-2">
+          <AnimatedSection animation="fade-up" delay={200} className="lg:col-span-5">
 
             <h3 className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40 mb-6">
               {t.footer.location}
@@ -153,17 +151,15 @@ export function Footer() {
               hover:shadow-[0_15px_40px_rgba(0,0,0,0.35)]
               transition-all duration-500
             ">
-
               <iframe
                 src={contactInfo.mapEmbedUrl}
                 width="100%"
-                height="180"
+                height="200"
                 style={{ border: 0 }}
                 allowFullScreen
                 loading="lazy"
                 title="CMP Location"
               />
-
             </div>
 
           </AnimatedSection>
