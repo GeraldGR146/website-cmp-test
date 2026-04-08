@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocale } from '@/i18n/LocaleContext';
 
 export function ContactForm() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(false);
   const [sending, setSending] = useState(false);
@@ -77,7 +77,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#0B2A59]/20 focus:border-[#0B2A59] outline-none 
             transition-all duration-300 bg-gray-50 focus:bg-white focus:shadow-md"
-          placeholder="John Doe"
+          placeholder={locale === 'en' ? 'Input Your Full Name' : 'Masukkan Nama Lengkap Anda'}
         />
       </div>
 
@@ -90,7 +90,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#0B2A59]/20 focus:border-[#0B2A59] outline-none 
             transition-all duration-300 bg-gray-50 focus:bg-white focus:shadow-md"
-          placeholder="john@example.com"
+          placeholder={locale === 'en' ? 'Input Your Email' : 'Masukkan Email Anda'}
         />
       </div>
 
@@ -103,7 +103,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#0B2A59]/20 focus:border-[#0B2A59] outline-none 
             transition-all duration-300 bg-gray-50 focus:bg-white focus:shadow-md"
-          placeholder="Product Inquiry"
+          placeholder={locale === 'en' ? 'Input Subject' : 'Masukkan Subjek'}
         />
       </div>
 
@@ -116,7 +116,7 @@ export function ContactForm() {
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
           className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-[#0B2A59]/20 focus:border-[#0B2A59] outline-none 
             transition-all duration-300 resize-none bg-gray-50 focus:bg-white focus:shadow-md"
-          placeholder="Tell us about your requirements..."
+          placeholder={locale === 'en' ? 'Input Your Message' : 'Masukkan Pesan Anda'}
         />
       </div>
 

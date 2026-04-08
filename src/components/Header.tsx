@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLocale, type Locale } from '@/i18n/LocaleContext';
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export function Header() {
   const { locale, setLocale, t } = useLocale();
@@ -8,14 +8,6 @@ export function Header() {
   const navigate = useNavigate();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const navItems = [
     { label: t.nav.home, path: `/${locale}` },
@@ -30,6 +22,7 @@ export function Header() {
       return current === `/${locale}` || current === `/${locale}/`;
     return current.startsWith(path);
   };
+
   const switchLocale = (newLocale: Locale) => {
     if (newLocale === locale) return;
 
@@ -41,9 +34,7 @@ export function Header() {
       return;
     }
 
-    // Replace first segment (locale)
     segments[0] = newLocale;
-
     const newPath = `/${segments.join('/')}`;
 
     setLocale(newLocale);
@@ -51,114 +42,102 @@ export function Header() {
   };
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 header-slide-down ${
-        scrolled
-          ? 'bg-white/95 backdrop-blur-md shadow-lg shadow-black/5'
-          : 'bg-white/80 backdrop-blur-sm'
-      }`}
-    >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to={`/${locale}`} className="flex items-center gap-3 group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#ffffff]">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-blue-100 shadow-md">
+      {/* Top accent line */}
+      <div className="h-1 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700"></div>
+
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
+          {/* Logo Section */}
+          <Link
+            to={`/${locale}`}
+            className="group flex items-center gap-4 flex-shrink-0"
+          >
+            {/* Clean Logo Box */}
+            <div>
               <img
                 src="/logos/Logo_CMP.png"
                 alt="CMP"
                 loading="eager"
-                className="h-10 w-auto object-contain"
+                className="w-35 h-35 object-contain transition-transform hover:scale-110 duration-300"
               />
             </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-[#0B2A59] leading-tight tracking-wide">
-                CMP
+
+            {/* Brand Text */}
+            <div className="flex flex-col justify-center min-w-0">
+              <span className="text-lg font-bold text-blue-900 tracking-tight leading-none sm:text-xl">
+                <span className="inline sm:hidden">CMP</span>
+                <span className="hidden sm:inline">CIPTA METALINDO PERSADA</span>
               </span>
-              <span className="text-[9px] text-gray-500 leading-tight tracking-wide">
-                CIPTA METALINDO PERSADA
+              <span className="text-[9px] text-blue-600 uppercase tracking-widest font-semibold mt-0.5 truncate">
+                <span className="inline sm:hidden">CIPTA METALINDO PERSADA</span>
+                <span className="hidden sm:inline">{t.nav.tagline}</span>
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 ${
+                className={`relative text-sm font-bold uppercase tracking-wide transition-all duration-300 pb-2 ${
                   isActive(item.path)
-                    ? 'text-[#0B2A59]'
-                    : 'text-gray-600 hover:text-[#0B2A59]'
+                    ? 'text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-700 hover:text-blue-600 border-b-2 border-transparent'
                 }`}
               >
                 {item.label}
-                <span
-                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-[#0B2A59] rounded-full transition-all duration-300 ${
-                    isActive(item.path) ? 'w-6' : 'w-0'
-                  }`}
-                />
               </Link>
             ))}
+          </nav>
 
-            <div className="ml-3 h-6 w-px bg-gray-200" />
-
-            {/* Locale switcher */}
-            <div className="ml-3 flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+          {/* Right Section */}
+          <div className="flex items-center gap-4">
+            {/* Locale Switcher */}
+            <div className="hidden sm:flex items-center gap-0 border-2 border-blue-600 rounded-lg overflow-hidden bg-white">
               <button
                 onClick={() => switchLocale('en')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${
+                className={`px-4 py-2 text-xs font-bold uppercase transition-all duration-300 border-r border-blue-600 ${
                   locale === 'en'
-                    ? 'bg-[#0B2A59] text-white shadow-sm'
-                    : 'text-gray-500 hover:text-[#0B2A59]'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
                 }`}
               >
                 EN
               </button>
               <button
                 onClick={() => switchLocale('id')}
-                className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all duration-300 ${
+                className={`px-4 py-2 text-xs font-bold uppercase transition-all duration-300 ${
                   locale === 'id'
-                    ? 'bg-[#0B2A59] text-white shadow-sm'
-                    : 'text-gray-500 hover:text-[#0B2A59]'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-blue-600 hover:bg-blue-50'
                 }`}
               >
                 ID
               </button>
             </div>
-          </nav>
 
-          {/* Mobile */}
-          <div className="flex md:hidden items-center gap-2">
-            <button
-              onClick={() =>
-                switchLocale(locale === 'en' ? 'id' : 'en')
-              }
-              className="px-3 py-1.5 rounded-lg bg-gray-100 text-xs font-bold text-[#0B2A59]"
-            >
-              {locale === 'en' ? 'EN' : 'ID'}
-            </button>
-
+            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              className="lg:hidden w-11 h-11 border-2 border-blue-600 bg-white flex items-center justify-center hover:bg-blue-50 transition-all duration-300 rounded-lg"
             >
-              <div className="w-6 h-5 relative flex flex-col justify-between">
+              <div className="w-5 h-4 relative flex flex-col justify-between">
                 <span
-                  className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 origin-center ${
-                    mobileMenuOpen ? 'rotate-45 translate-y-[9px]' : ''
+                  className={`w-full h-0.5 bg-blue-600 transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? 'rotate-45 translate-y-[7px]' : ''
                   }`}
                 />
                 <span
-                  className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 ${
-                    mobileMenuOpen ? 'opacity-0 scale-0' : ''
+                  className={`w-full h-0.5 bg-blue-600 transition-opacity duration-300 ${
+                    mobileMenuOpen ? 'opacity-0' : ''
                   }`}
                 />
                 <span
-                  className={`w-full h-0.5 bg-current rounded-full transition-all duration-300 origin-center ${
-                    mobileMenuOpen
-                      ? '-rotate-45 -translate-y-[9px]'
-                      : ''
+                  className={`w-full h-0.5 bg-blue-600 transition-all duration-300 origin-center ${
+                    mobileMenuOpen ? '-rotate-45 -translate-y-[7px]' : ''
                   }`}
                 />
               </div>
@@ -168,35 +147,70 @@ export function Header() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-400 ease-out ${
-            mobileMenuOpen
-              ? 'max-h-80 opacity-100 pb-4'
-              : 'max-h-0 opacity-0'
+          className={`lg:hidden overflow-hidden transition-all duration-500 border-t border-blue-200 bg-gradient-to-b from-blue-50 to-white ${
+            mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
           }`}
         >
-          <div className="border-t border-gray-100 pt-2">
-            {navItems.map((item, i) => (
+          <div className="px-4 py-6 space-y-0">
+            {navItems.map((item, idx) => (
               <Link
                 key={item.path}
                 to={item.path}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`block w-full text-left px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                className={`block w-full px-4 py-3 text-sm font-bold uppercase tracking-wide border-l-2 transition-all duration-300 ${
                   isActive(item.path)
-                    ? 'text-[#0B2A59] bg-blue-50'
-                    : 'text-gray-600 hover:bg-gray-50'
+                    ? 'border-blue-600 bg-blue-100 text-blue-700'
+                    : 'border-gray-300 text-gray-700 hover:border-blue-600 hover:bg-blue-50 hover:text-blue-600'
                 }`}
                 style={{
-                  transitionDelay: mobileMenuOpen
-                    ? `${i * 50}ms`
-                    : '0ms',
+                  animationDelay: mobileMenuOpen ? `${idx * 75}ms` : '0ms',
+                  animation: mobileMenuOpen ? 'slideInLeft 0.4s ease-out forwards' : 'none',
                 }}
               >
                 {item.label}
               </Link>
             ))}
+
+            <div className="border-t border-blue-200 mt-6 pt-6">
+              <div className="flex gap-0">
+                <button
+                  onClick={() => switchLocale('en')}
+                  className={`flex-1 px-4 py-3 text-xs font-bold uppercase tracking-wider border-2 border-blue-600 transition-all duration-300 rounded-l-lg ${
+                    locale === 'en'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  EN
+                </button>
+                <button
+                  onClick={() => switchLocale('id')}
+                  className={`flex-1 px-4 py-3 text-xs font-bold uppercase tracking-wider border-2 border-l-0 border-blue-600 transition-all duration-300 rounded-r-lg ${
+                    locale === 'id'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white text-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  ID
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </header>
   );
 }

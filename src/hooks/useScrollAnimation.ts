@@ -1,15 +1,21 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 
-interface UseScrollAnimationOptions {
-  threshold?: number;
-  rootMargin?: string;
-  triggerOnce?: boolean;
-}
-
-export function useScrollAnimation(options: UseScrollAnimationOptions = {}) {
-  const { threshold = 0.15, rootMargin = '0px 0px -60px 0px', triggerOnce = true } = options;
-  const ref = useRef<HTMLDivElement>(null);
+export function useScrollAnimation(options: { 
+  threshold?: number; 
+  rootMargin?: string; 
+  triggerOnce?: boolean 
+} = {}) {
+  // We use a slightly positive rootMargin bottom to trigger BEFORE the user sees it
+  const { threshold = 0.1, rootMargin = '0px 0px -50px 0px', triggerOnce = true } = options;
   const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { pathname } = useLocation();
+
+  // Reset animations when navigating to a new page
+  useEffect(() => {
+    setIsVisible(false);
+  }, [pathname]);
 
   useEffect(() => {
     const element = ref.current;
@@ -20,31 +26,19 @@ export function useScrollAnimation(options: UseScrollAnimationOptions = {}) {
         if (entry.isIntersecting) {
           setIsVisible(true);
           if (triggerOnce) observer.unobserve(element);
-        } else if (!triggerOnce) {
-          setIsVisible(false);
         }
       },
       { threshold, rootMargin }
     );
 
+    // This is the key: observe immediately. 
+    // If the scroll is already at this element (Reload), it triggers instantly.
     observer.observe(element);
+    
     return () => observer.disconnect();
-  }, [threshold, rootMargin, triggerOnce]);
+  }, [pathname, threshold, rootMargin, triggerOnce]);
 
   return { ref, isVisible };
-}
-
-export function useStaggerAnimation(itemCount: number, staggerDelay = 100) {
-  const { ref, isVisible } = useScrollAnimation();
-  
-  const getDelay = useCallback(
-    (index: number) => ({
-      transitionDelay: isVisible ? `${index * staggerDelay}ms` : '0ms',
-    }),
-    [isVisible, staggerDelay]
-  );
-
-  return { ref, isVisible, getDelay, itemCount };
 }
 
 export function useCountUp(end: number, duration = 2000, startOnVisible = true) {

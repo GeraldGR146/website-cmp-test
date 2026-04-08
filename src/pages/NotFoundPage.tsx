@@ -1,56 +1,69 @@
-import { Link } from 'react-router-dom';
 import { useLocale } from '@/i18n/LocaleContext';
+import { motion } from 'framer-motion';
+import { FileX } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function NotFoundPage() {
   const { locale, t } = useLocale();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
-      {/* Floating decorative elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-[#0B2A59]/10 rounded-full animate-bounce" style={{ animationDelay: '0s', animationDuration: '3s' }} />
-        <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-[#0B2A59]/15 rounded-full animate-bounce" style={{ animationDelay: '0.5s', animationDuration: '2.5s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-4 h-4 bg-[#0B2A59]/5 rounded-full animate-bounce" style={{ animationDelay: '1s', animationDuration: '3.5s' }} />
-        <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-[#0B2A59]/10 rounded-full animate-bounce" style={{ animationDelay: '1.5s', animationDuration: '2.8s' }} />
-      </div>
-
-      <div className="text-center px-6 relative z-10">
-        {/* 404 Number */}
-        <div className="relative mb-8">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 rounded-full border-2 border-[#0B2A59]/5 animate-ping" style={{ animationDuration: '3s' }} />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-64 h-64 rounded-full border border-[#0B2A59]/5 animate-ping" style={{ animationDuration: '4s', animationDelay: '0.5s' }} />
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50 flex items-center justify-center pt-16">
+      <div className="max-w-[1200px] mx-auto px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <div className="flex justify-center mb-8">
+            <div className="w-24 h-24 flex items-center justify-center rounded-full bg-indigo-100">
+              <FileX className="w-12 h-12 text-indigo-600" />
+            </div>
           </div>
 
-          <h1
-            className="text-[10rem] md:text-[14rem] font-black leading-none bg-gradient-to-br from-[#0B2A59] to-indigo-600 bg-clip-text text-transparent select-none"
-            style={{ animation: 'float 3s ease-in-out infinite' }}
+          <motion.h1
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-6xl md:text-8xl font-black text-slate-900 mb-6"
           >
             404
-          </h1>
-        </div>
+          </motion.h1>
 
-        {/* Message */}
-        <h2 className="text-2xl md:text-3xl font-bold text-[#0B2A59] mb-4 anim-fade-up anim-visible">
-          {t.notFound.title}
-        </h2>
-        <p className="text-gray-500 max-w-md mx-auto mb-8 anim-fade-up anim-visible" style={{ animationDelay: '0.1s' }}>
-          {t.notFound.description}
-        </p>
+          <motion.h2
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-2xl md:text-3xl font-bold text-slate-900 mb-4"
+          >
+            {t.notFound.title}
+          </motion.h2>
 
-        {/* Back to Home button */}
-        <Link
-          to={`/${locale}`}
-          className="inline-flex items-center gap-2 bg-[#0B2A59] text-white px-8 py-3.5 rounded-xl font-semibold hover:bg-[#0B2A59]/90 transition-all duration-300 hover:scale-105 hover:shadow-lg anim-scale-up anim-visible"
-          style={{ animationDelay: '0.2s' }}
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z" />
-          </svg>
-          {t.notFound.backHome}
-        </Link>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-slate-600 max-w-md mx-auto mb-8"
+          >
+            {t.notFound.description}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            <Link
+              to={`/${locale}`}
+              className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-md font-semibold hover:bg-slate-800 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z" />
+              </svg>
+              {t.notFound.backHome}
+            </Link>
+          </motion.div>
+        </motion.div>
       </div>
     </div>
   );

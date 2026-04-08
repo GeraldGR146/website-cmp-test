@@ -1,176 +1,109 @@
-import {
-  motion,
-  Variants,
-  useMotionValue,
-  useInView,
-  animate,
-  useScroll,
-  useTransform,
-} from "framer-motion";
-import { useNavigate, Link } from "react-router-dom";
-import { useLocale } from "@/i18n/LocaleContext";
+import { clientLogos } from "@/cms/homepage";
+import { getFeaturedProducts } from "@/cms/products";
 import { HeroSection } from "@/components/HeroSection";
 import { ProductCard } from "@/components/ProductCard";
-import { getFeaturedProducts } from "@/cms/products";
-import { clientLogos } from "@/cms/homepage";
+import { useLocale } from "@/i18n/LocaleContext";
 import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+import { motion } from "framer-motion";
+
 import {
-  Cog6ToothIcon,
-  WrenchScrewdriverIcon,
   CheckBadgeIcon,
+  Cog6ToothIcon,
   CubeIcon,
+  WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
-/* ─────────────── ANIMATION VARIANTS ─────────────── */
-
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 48 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
-const stagger: Variants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.12 } },
-};
-
-/* ─────────────── STAT COUNTER ─────────────── */
-
-function StatNumber({ value, suffix = "" }: { value: number; suffix?: string }) {
-  const ref = useRef(null);
-  const motionValue = useMotionValue(0);
-  const isInView = useInView(ref, { once: true });
-  const [display, setDisplay] = React.useState(0);
+function LogoCarousel({ logos }: { logos: { name: string; image: string }[] }) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    if (isInView) {
-      const controls = animate(motionValue, value, {
-        duration: 2.2,
-        ease: "easeOut",
-        onUpdate: (v) => setDisplay(Math.floor(v)),
-      });
-      return controls.stop;
+    if (trackRef.current) {
+      setWidth(trackRef.current.scrollWidth / 2);
     }
-  }, [isInView, value]);
+  }, []);
 
   return (
-    <span ref={ref}>
-      {display.toLocaleString()}
-      {suffix}
-    </span>
+    <div className="relative overflow-hidden">
+      {/* Edge fade */}
+      <div className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-linear-to-r from-slate-50 to-transparent z-10" />
+      <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-linear-to-l from-slate-50 to-transparent z-10" />
+
+      <motion.div
+        ref={trackRef}
+        className="flex items-center gap-12 w-max"
+        animate={{ x: [0, -width] }}
+        transition={{
+          duration: 40,
+          ease: "linear",
+          repeat: Infinity,
+        }}
+      >
+        {[...logos, ...logos].map((logo, i) => (
+          <div
+            key={`${logo.name}-${i}`}
+            className="flex items-center justify-center w-32 shrink-0 opacity-60 hover:opacity-100 transition-opacity"
+          >
+            <img
+              src={logo.image}
+              alt={logo.name}
+              className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition"
+            />
+          </div>
+        ))}
+      </motion.div>
+    </div>
   );
 }
 
-/* ─────────────── STORY BLOCK (scroll-driven) ─────────────── */
-
-function StoryBlock({
-  index,
-  title,
-  text,
-  tag,
-}: {
-  index: number;
-  title: string;
-  text: string;
-  tag: string;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-
+function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <motion.div
-      ref={ref}
-      animate={isInView ? "visible" : "hidden"}
-      initial="hidden"
-      variants={fadeUp}
-      className="relative pl-8 border-l-2 border-slate-200 group"
-    >
-      {/* Index dot */}
-      <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-[#0B2A59] bg-white group-[.is-active]:bg-[#0B2A59] transition-colors duration-500" />
-
-      <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#0B2A59]/50 mb-3 block">
-        {String(index + 1).padStart(2, "0")} — {tag}
-      </span>
-
-      <h3 className="text-3xl lg:text-4xl font-black text-slate-900 leading-tight mb-4">
-        {title}
-      </h3>
-
-      <p className="text-slate-500 leading-[1.85] text-lg max-w-lg">{text}</p>
-    </motion.div>
+    <div className="group text-center">
+      <div className="text-5xl sm:text-4xl font-black text-white leading-none group-hover:text-indigo-200 transition-colors">
+        {value}
+      </div>
+      <div className="mt-4 text-xs uppercase tracking-[0.35em] text-indigo-300 font-semibold group-hover:text-indigo-100 transition-colors">
+        {label}
+      </div>
+    </div>
   );
 }
-
-/* ─────────────── CAPABILITY CARD ─────────────── */
 
 function CapabilityCard({
   icon: Icon,
   title,
   desc,
-  index,
 }: {
   icon: React.ElementType;
   title: string;
   desc: string;
-  index: number;
 }) {
   return (
-    <motion.div
-      variants={fadeUp}
-      whileHover={{ y: -6, transition: { duration: 0.3 } }}
-      className="relative group bg-white border border-slate-100 rounded-3xl p-8 overflow-hidden shadow-sm hover:shadow-xl transition-shadow duration-500"
-    >
-      {/* Hover bg wash */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0B2A59]/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
-
-      {/* Corner number */}
-      <span className="absolute top-7 right-7 text-[11px] font-bold text-slate-200 tracking-widest">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-
-      <div className="w-12 h-12 rounded-2xl bg-[#0B2A59]/8 flex items-center justify-center mb-6 group-hover:bg-[#0B2A59]/12 transition-colors duration-300">
-        <Icon className="w-6 h-6 text-[#0B2A59]" />
+    <div className="group relative border border-indigo-200 rounded-2xl p-8 bg-white hover:bg-indigo-50 hover:border-indigo-300 hover:shadow-[0_20px_60px_-24px_rgba(79,70,229,0.2)] transition-all duration-300">
+      <div className="absolute -inset-1 rounded-2xl opacity-0 group-hover:opacity-5 bg-indigo-600 transition-opacity duration-300" />
+      <div className="relative w-12 h-12 flex items-center justify-center rounded-xl bg-linear-to-br from-indigo-600 to-indigo-700 text-white mb-6 group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
+        <Icon className="w-6 h-6" />
       </div>
 
-      <h3 className="font-bold text-lg text-slate-900 mb-2">{title}</h3>
-      <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
-    </motion.div>
+      <h3 className="text-lg font-semibold text-slate-900 mb-3">
+        {title}
+      </h3>
+
+      <p className="text-sm text-slate-600 leading-relaxed">
+        {desc}
+      </p>
+    </div>
   );
 }
 
-/* ─────────────── HOME PAGE ─────────────── */
+/* ───────────── MAIN PAGE ───────────── */
 
 export function HomePage() {
   const { t, locale } = useLocale();
   const navigate = useNavigate();
   const featured = getFeaturedProducts();
-  const learnMoreText = locale === "en" ? "Explore Our Work" : "Lihat Selengkapnya";
-
-  /* Logo marquee */
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [trackWidth, setTrackWidth] = useState(0);
-  useEffect(() => {
-    if (trackRef.current) setTrackWidth(trackRef.current.scrollWidth / 3);
-  }, []);
-
-  /* Sticky image parallax for storytelling section */
-  const storyRef = useRef(null);
-  const { scrollYProgress: storyScroll } = useScroll({
-    target: storyRef,
-    offset: ["start end", "end start"],
-  });
-  const imageScale = useTransform(storyScroll, [0, 1], [1.08, 1]);
-  const imageY = useTransform(storyScroll, [0, 1], ["0%", "8%"]);
-
-  const stats = [
-    { value: 28, suffix: "+", label: t.home.stats.years, unit: "yrs" },
-    { value: 500, suffix: "+", label: t.home.stats.clients, unit: "clients" },
-    { value: 200, suffix: "+", label: t.home.stats.products, unit: "SKUs" },
-    { value: 9001, suffix: "", label: t.home.stats.certified, unit: "ISO" },
-  ];
 
   const capabilities = [
     {
@@ -195,28 +128,10 @@ export function HomePage() {
     },
   ];
 
-  const storyBlocks = [
-    {
-      tag: "Engineering",
-      title: t.home.story.engineeringTitle,
-      text: t.home.story.engineeringDesc,
-    },
-    {
-      tag: "Machinery",
-      title: t.home.story.machineryTitle,
-      text: t.home.story.machineryDesc,
-    },
-    {
-      tag: "Quality",
-      title: t.home.story.qualityTitle,
-      text: t.home.story.qualityDesc,
-    },
-  ];
-
   return (
-    <div className="overflow-hidden bg-white">
+    <div className="bg-linear-to-br from-slate-50 via-white to-blue-50 min-h-screen">
 
-      {/* ══════════════════ HERO ══════════════════ */}
+      {/* ───────────── HERO ───────────── */}
       <HeroSection
         title={t.hero.title}
         subtitle={t.hero.subtitle}
@@ -226,349 +141,231 @@ export function HomePage() {
         onCtaClick={() => navigate(`/${locale}/about`)}
         onSecondaryClick={() => navigate(`/${locale}/products`)}
         backgroundImage="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1920&q=80"
-        overlay="blue"
-        size="full"
+        size="large"
       />
 
-      {/* ══════════════════ MARQUEE LOGOS ══════════════════ */}
-      <section className="py-20 bg-white overflow-hidden border-b border-slate-100">
-        <div className="mx-auto max-w-[1280px] px-6 mb-10">
-          <motion.p
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={fadeUp}
-            className="text-center text-[11px] font-bold uppercase tracking-[0.35em] text-slate-400"
-          >
-            {t.home.trustedBy}
-          </motion.p>
-        </div>
+      {/* ───────────── TRUST + CAROUSEL ───────────── */}
+      <section className="relative bg-linear-to-br from-white via-blue-50 to-indigo-50 border-b border-indigo-100 overflow-hidden">
+        <div className="absolute inset-0 opacity-40" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.1) 0%, transparent 50%)`,
+        }} />
+        <div className="max-w-[1200px] mx-auto px-6 py-16 relative">
+          <div className="text-center mb-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600 mb-3">
+              {locale === 'en' ? '✦ Trusted By' : '✦ Dipercaya Oleh'}
+            </p>
+            <h3 className="text-2xl font-bold text-slate-900">
+              {t.home.trustedBy}
+            </h3>
+          </div>
 
-        <div className="relative overflow-hidden">
-          <div className="pointer-events-none absolute left-0 top-0 h-full w-32 bg-gradient-to-r from-white to-transparent z-10" />
-          <div className="pointer-events-none absolute right-0 top-0 h-full w-32 bg-gradient-to-l from-white to-transparent z-10" />
-
-          <motion.div
-            ref={trackRef}
-            className="flex gap-16 items-center w-max"
-            animate={{ x: [0, -trackWidth] }}
-            transition={{ repeat: Infinity, duration: 50, ease: "linear" }}
-          >
-            {[...clientLogos, ...clientLogos, ...clientLogos].map((client, idx) => (
-              <div
-                key={`${client.name}-${idx}`}
-                className="flex items-center justify-center grayscale hover:grayscale-0 opacity-35 hover:opacity-90 transition-all duration-400 w-36 shrink-0"
-              >
-                <img
-                  src={client.image}
-                  alt={client.name}
-                  className="h-12 w-auto object-contain"
-                />
-              </div>
-            ))}
-          </motion.div>
+          <LogoCarousel logos={clientLogos} />
         </div>
       </section>
 
-      {/* ══════════════════ STATS ══════════════════ */}
-      <section className="py-24 bg-[#0B2A59] relative overflow-hidden">
-        {/* Background texture */}
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-            backgroundSize: "48px 48px",
-          }}
-        />
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-blue-400/10 blur-[120px] -translate-y-1/2 translate-x-1/3" />
-
-        <div className="relative mx-auto max-w-[1200px] px-6">
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 rounded-3xl overflow-hidden"
-          >
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                variants={fadeUp}
-                className="flex flex-col items-center justify-center py-14 px-8 text-center bg-[#0B2A59] relative group hover:bg-white/5 transition-colors duration-500"
-              >
-                <div className="text-5xl lg:text-6xl font-black text-white tracking-tight tabular-nums">
-                  <StatNumber value={stat.value} suffix={stat.suffix} />
-                </div>
-                <div className="mt-3 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300/70">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+      {/* ───────────── STATS ───────────── */}
+      <section className="bg-linear-to-br from-slate-900 to-slate-800 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 0)`,
+          backgroundSize: '40px 40px'
+        }} />
+        <div className="max-w-[1200px] mx-auto px-6 py-20 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
+          <Stat value="28+" label={t.home.stats.years} />
+          <Stat value="500+" label={t.home.stats.clients} />
+          <Stat value="200+" label={t.home.stats.products} />
+          <Stat value="ISO" label={t.home.stats.certified} />
         </div>
       </section>
 
-      {/* ══════════════════ STORYTELLING ══════════════════ */}
-      <section ref={storyRef} className="py-32 lg:py-40 bg-white">
-        <div className="mx-auto max-w-[1280px] px-6">
+      {/* ───────────── CAPABILITIES ───────────── */}
+      <section className="relative bg-linear-to-br from-slate-100 via-white to-blue-50 py-24 overflow-hidden">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `linear-gradient(135deg, rgba(99,102,241,0.08) 0%, transparent 50%)`,
+        }} />
+        <div className="max-w-[1200px] mx-auto px-6 relative">
+          <div className="max-w-2xl mb-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600 mb-3">
+              {locale === 'en' ? '✦ What We Do' : '✦ Apa Yang Kami Lakukan'}
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
+              {t.home.capabilities.title}
+            </h2>
+          </div>
 
-          {/* Section header */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="mb-20 max-w-xl"
-          >
-            <motion.span
-              variants={fadeUp}
-              className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#0B2A59] block mb-4"
-            >
-              Our Approach
-            </motion.span>
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl lg:text-5xl font-black text-slate-900 leading-tight"
-            >
-              Built to perform.<br />
-              <span className="text-slate-400">Engineered to last.</span>
-            </motion.h2>
-          </motion.div>
-
-          <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-
-            {/* Sticky image with parallax */}
-            <div className="lg:sticky top-28 h-fit order-2 lg:order-1">
-              <div className="relative overflow-hidden rounded-3xl aspect-[4/5] shadow-2xl">
-                <motion.img
-                  src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?w=1200"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ scale: imageScale, y: imageY }}
-                />
-                {/* Overlay label card */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-sm rounded-2xl p-5 shadow-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                      Active Production Facility
-                    </span>
-                  </div>
-                  <p className="text-sm font-semibold text-slate-800 mt-1">
-                    Tangerang, Banten — Est. 1995
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Story blocks */}
-            <div className="order-1 lg:order-2 space-y-16 pt-4">
-              {storyBlocks.map((block, i) => (
-                <StoryBlock
-                  key={i}
-                  index={i}
-                  tag={block.tag}
-                  title={block.title}
-                  text={block.text}
-                />
-              ))}
-            </div>
-
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {capabilities.map((cap, i) => (
+              <CapabilityCard key={i} {...cap} />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ══════════════════ CAPABILITIES ══════════════════ */}
-      <section className="py-28 bg-slate-50 border-y border-slate-100">
-        <div className="mx-auto max-w-[1280px] px-6">
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="text-center mb-16"
-          >
-            <motion.span
-              variants={fadeUp}
-              className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#0B2A59] block mb-4"
-            >
-              What We Do
-            </motion.span>
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl lg:text-5xl font-black text-slate-900"
-            >
-              {t.home.capabilities.title}
-            </motion.h2>
-          </motion.div>
-
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {capabilities.map((cap, i) => (
-              <CapabilityCard key={i} index={i} {...cap} />
-            ))}
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* ══════════════════ FEATURED PRODUCTS ══════════════════ */}
-      <section className="py-32 bg-white">
-        <div className="mx-auto max-w-[1280px] px-6">
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-            className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16"
-          >
+      {/* ───────────── APPROACH ───────────── */}
+      <section className="relative bg-white py-32 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-6">
+          {/* Headline + Company Story */}
+          <div className="grid gap-14 lg:grid-cols-[1fr_1.25fr] items-center mb-24">
             <div>
-              <motion.span
-                variants={fadeUp}
-                className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#0B2A59] block mb-3"
-              >
-                Product Range
-              </motion.span>
-              <motion.h2
-                variants={fadeUp}
-                className="text-4xl lg:text-5xl font-black text-slate-900"
-              >
-                {t.home.featuredProducts}
-              </motion.h2>
-              <motion.p
-                variants={fadeUp}
-                className="mt-3 text-slate-500 text-lg max-w-lg"
-              >
-                {t.home.featuredDesc}
-              </motion.p>
+              <h1 className="text-5xl sm:text-6xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
+                {locale === 'en' ? 'Precision metal, built on conviction.' : 'Logam presisi, dibangun atas keyakinan.'}
+              </h1>
             </div>
+            <div>
+              <p className="text-lg text-slate-600 leading-relaxed font-light">
+                {locale === 'en'
+                  ? 'PT Cipta Metalindo Persada has spent 28 years becoming the foundry that manufacturers rely on. We do not promise speed or cheapness—we promise parts that fit, materials that hold, and delivery that works.'
+                  : 'PT Cipta Metalindo Persada telah menghabiskan 28 tahun menjadi foundry yang diandalkan oleh manufaktur. Kami tidak menjanjikan kecepatan atau harga murah—kami menjanjikan part yang pas, material yang kokoh, dan pengiriman yang bekerja.'}
+              </p>
+            </div>
+          </div>
 
-            <motion.div variants={fadeUp} className="shrink-0">
-              <Link
-                to={`/${locale}/products`}
-                className="group inline-flex items-center gap-2 text-sm font-bold text-[#0B2A59] hover:gap-3 transition-all duration-300"
-              >
-                {t.home.viewAll}
-                <svg
-                  className="w-4 h-4 transition-transform group-hover:translate-x-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7"
-          >
-            {featured.slice(0, 9).map((product) => (
+          {/* Three Pillars - No Cards */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-20">
+            {[
+              {
+                title: t.home.story.engineeringTitle,
+                description: t.home.story.engineeringDesc,
+                image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80',
+              },
+              {
+                title: t.home.story.machineryTitle,
+                description: t.home.story.machineryDesc,
+                image: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=600&q=80',
+              },
+              {
+                title: t.home.story.qualityTitle,
+                description: t.home.story.qualityDesc,
+                image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80',
+              },
+            ].map((pillar, index) => (
               <motion.div
-                key={product.id}
-                variants={fadeUp}
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.3 }}
+                key={pillar.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative overflow-hidden rounded-2xl h-96"
               >
-                <ProductCard product={product} />
+                {/* Image Background */}
+                <img
+                  src={pillar.image}
+                  alt={pillar.title}
+                  loading="eager"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                
+                {/* Dark Overlay */}
+                <div className="absolute inset-0 bg-linear-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
+
+                {/* Content */}
+                <div className="relative h-full flex flex-col justify-end p-7 sm:p-8">
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-slate-100 leading-relaxed text-sm sm:text-base">
+                    {pillar.description}
+                  </p>
+                </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
 
+          {/* Large Horizontal Image Section */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-16 text-center"
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6 }}
+            className="relative overflow-hidden rounded-2xl h-96 sm:h-[480px] lg:h-[540px] shadow-lg"
           >
-            <Link
-              to={`/${locale}/products`}
-              className="inline-flex items-center gap-3 rounded-full bg-[#0B2A59] px-10 py-4 text-sm font-bold text-white shadow-lg hover:shadow-[#0B2A59]/30 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
-            >
-              {t.home.viewAll}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
+            <img
+              src="https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1400&q=80"
+              alt="PT Cipta Metalindo Persada"
+              className="h-full w-full object-cover transition-transform duration-700 hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-slate-950/70 via-slate-950/30 to-transparent" />
+            <div className="absolute left-6 bottom-6 rounded-2xl bg-white/98 px-6 py-4 shadow-xl backdrop-blur-md sm:left-8 sm:bottom-8 sm:px-8 sm:py-5">
+              <p className="text-xs uppercase tracking-widest text-slate-600 font-semibold">
+                {locale === 'en' ? 'Since 1995' : 'Sejak 1995'}
+              </p>
+              <p className="text-base font-semibold text-slate-900 mt-1">
+                {locale === 'en' ? 'Tangerang, Indonesia' : 'Tangerang, Indonesia'}
+              </p>
+            </div>
           </motion.div>
-
         </div>
       </section>
 
-      {/* ══════════════════ CTA BANNER ══════════════════ */}
-      <section className="relative overflow-hidden bg-[#0B2A59] py-28">
-        {/* Decorative bg shapes */}
-        <div className="absolute inset-0">
-          <div
-            className="absolute inset-0 opacity-[0.05]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-          <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] rounded-full bg-blue-500/15 blur-[80px]" />
-          <div className="absolute -top-24 -left-24 w-[400px] h-[400px] rounded-full bg-blue-300/10 blur-[80px]" />
-        </div>
+      {/* ───────────── FEATURED PRODUCTS ───────────── */}
+      <section className="relative bg-linear-to-br from-slate-900 via-slate-800 to-indigo-900 py-28 overflow-hidden">
+        <div className="absolute inset-0 opacity-30" style={{
+          backgroundImage: `radial-gradient(circle at 20% 50%, rgba(79,70,229,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(59,130,246,0.2) 0%, transparent 50%)`,
+        }} />
+        <div className="max-w-[1200px] mx-auto px-6 relative">
+          <div className="flex flex-col sm:flex-row justify-between gap-6 mb-16 items-start">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-300 mb-3">
+                {locale === "en" ? "✦ Product Range" : "✦ Pilihan Produk"}
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                {t.home.featuredProducts}
+              </h2>
+              <p className="mt-2 text-indigo-100 max-w-md text-base leading-relaxed">
+                {t.home.featuredDesc}
+              </p>
+            </div>
 
-        <div className="relative z-10 mx-auto max-w-[700px] px-6 text-center">
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            variants={stagger}
-          >
-            <motion.span
-              variants={fadeUp}
-              className="text-[11px] font-bold uppercase tracking-[0.3em] text-blue-300/70 block mb-5"
-            >
-              Get in Touch
-            </motion.span>
-
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl lg:text-5xl font-black text-white leading-tight"
-            >
-              {t.home.cta.title}
-            </motion.h2>
-
-            <motion.p
-              variants={fadeUp}
-              className="mt-5 text-blue-200/70 text-lg leading-relaxed"
-            >
-              {t.home.cta.desc}
-            </motion.p>
-
-            <motion.div variants={fadeUp} className="mt-10">
+            <div className="flex items-end">
               <Link
-                to={`/${locale}/contact`}
-                className="group inline-flex items-center gap-3 rounded-full bg-white text-[#0B2A59] px-10 py-4 text-sm font-bold shadow-xl hover:shadow-white/20 hover:scale-105 active:scale-95 transition-all duration-300"
+                to={`/${locale}/products`}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-indigo-200 group transition-colors"
               >
-                {t.home.cta.button}
-                <svg
-                  className="w-4 h-4 transition-transform group-hover:translate-x-1 duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                {t.home.viewAll}
+                <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.slice(0, 6).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───────────── CTA ───────────── */}
+      <section className="relative bg-linear-to-br from-[#0B2A59] to-indigo-800 text-white py-24 overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 1px)`,
+          backgroundSize: '50px 50px'
+        }} />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+        <div className="max-w-2xl mx-auto px-6 text-center relative">
+          <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-200 mb-4">
+            {locale === 'en' ? '✦ Get Started Today' : '✦ Mulai Hari Ini'}
+          </p>
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
+            {t.home.cta.title}
+          </h2>
+          <p className="mt-4 text-lg text-indigo-100 leading-relaxed">
+            {t.home.cta.desc}
+          </p>
+
+          <div className="mt-10">
+            <Link
+              to={`/${locale}/contact`}
+              className="inline-flex items-center gap-3 bg-white text-indigo-700 px-8 py-4 text-base font-semibold rounded-2xl hover:bg-indigo-50 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform"
+            >
+              {t.home.cta.button}
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 

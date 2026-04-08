@@ -6,7 +6,7 @@ import {
   Navigate,
   useNavigationType,
 } from 'react-router-dom';
-import React, { useEffect, useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useEffect } from 'react';
 import { LocaleProvider, useLocale } from '@/i18n/LocaleContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -17,49 +17,26 @@ import { ContactPage } from '@/pages/ContactPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
 
 function ScrollManager() {
-  const location = useLocation();
+  const { pathname } = useLocation();
   const navigationType = useNavigationType();
-  const pathname = location.pathname;
-
-  const routeKey = pathname.replace(/^\/(en|id)/, '');
-
-  const previousRouteRef = React.useRef(routeKey);
-
-  // Save scroll continuously
-  useEffect(() => {
-    const handleScroll = () => {
-      sessionStorage.setItem(
-        `scroll-${routeKey}`,
-        String(window.scrollY)
-      );
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [routeKey]);
 
   useLayoutEffect(() => {
-    const previousRoute = previousRouteRef.current;
-    const saved = sessionStorage.getItem(`scroll-${routeKey}`);
-
-    const isSamePageDifferentLocale =
-      previousRoute === routeKey;
+    const canManageScroll = 'scrollRestoration' in window.history;
 
     if (navigationType === 'PUSH') {
-      if (isSamePageDifferentLocale) {
-        // Language switch → restore
-        if (saved) window.scrollTo(0, parseInt(saved));
-      } else {
-        // Real route change → go to top
-        window.scrollTo(0, 0);
+      // 1. User clicked a link: Force scroll to top instantly
+      if (canManageScroll) {
+        window.history.scrollRestoration = 'manual';
       }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } else {
-      // POP or Refresh → restore
-      if (saved) window.scrollTo(0, parseInt(saved));
+      // 2. User Reloaded or hit Back/Forward: 
+      // Let the browser handle the scroll position automatically
+      if (canManageScroll) {
+        window.history.scrollRestoration = 'auto';
+      }
     }
-
-    previousRouteRef.current = routeKey;
-  }, [routeKey, navigationType]);
+  }, [pathname, navigationType]);
 
   return null;
 }
@@ -73,21 +50,17 @@ function AppLayout() {
   return (
     <>
       <ScrollManager />
-
       <div className="min-h-screen flex flex-col bg-white">
         <Header />
-
         <main className="flex-1">
           <Routes>
-            {/* Root redirect */}
             <Route path="/" element={<LocaleRedirect />} />
-
             {/* English Routes */}
             <Route path="/en" element={<HomePage />} />
             <Route path="/en/about" element={<AboutPage />} />
             <Route path="/en/products" element={<ProductsPage />} />
             <Route path="/en/contact" element={<ContactPage />} />
-
+            
             {/* Indonesian Routes */}
             <Route path="/id" element={<HomePage />} />
             <Route path="/id/about" element={<AboutPage />} />
@@ -97,12 +70,12 @@ function AppLayout() {
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
-
         <Footer />
       </div>
     </>
   );
 }
+
 export default function App() {
   return (
     <Router>

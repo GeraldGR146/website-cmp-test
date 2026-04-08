@@ -1,24 +1,24 @@
-import { useLocale } from '@/i18n/LocaleContext';
-import { ContactForm } from '@/components/ContactForm';
-import { AnimatedSection } from '@/components/AnimatedSection';
 import { contactInfo } from '@/cms/contact';
+import { AnimatedSection } from '@/components/AnimatedSection';
+import { ContactForm } from '@/components/ContactForm';
+import { useLocale } from '@/i18n/LocaleContext';
 
 export function ContactPage() {
   const { locale, t } = useLocale();
 
   return (
-    <div className="pt-16 page-enter min-h-screen bg-white">
+    <div className="pt-16 page-enter min-h-screen bg-linear-to-br from-slate-50 via-white to-indigo-50">
       {/* Centered CMP Logo + Title */}
       <section className="pt-16 pb-10">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 text-center">
           <AnimatedSection animation="scale-up">
             <div className="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-[#FFFFFF] shadow-2xl shadow-[#0B2A59]/30 mb-6">
-                <img
-                  src="/logos/Logo_CMP.png"
-                  alt="CMP"
-                  loading="eager"
-                  className="p-1"
-                />
+              <img
+                src="/logos/Logo_CMP.png"
+                alt="CMP"
+                loading="eager"
+                className="p-1"
+              />
             </div>
           </AnimatedSection>
           <AnimatedSection animation="fade-up" delay={100}>
@@ -44,7 +44,7 @@ export function ContactPage() {
       {/* Form + Map side by side */}
       <section className="pb-20">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-3xl overflow-hidden border border-gray-200 shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 rounded-3xl overflow-hidden border border-indigo-200 shadow-xl">
 
             {/* Left: Contact Form */}
             <div className="lg:col-span-3 p-8 sm:p-10 lg:p-12 bg-white">
@@ -61,7 +61,7 @@ export function ContactPage() {
             </div>
 
             {/* Right: Map + Contact Info */}
-            <div className="lg:col-span-2 bg-[#0B2A59] text-white flex flex-col">
+            <div className="lg:col-span-2 bg-linear-to-br from-[#0B2A59] to-indigo-700 text-white flex flex-col">
               {/* Contact Information */}
               <AnimatedSection animation="fade-left" delay={200} className="p-8 sm:p-10 flex-1">
                 <h2 className="text-lg font-bold mb-1">{t.contact.contactInformation}</h2>
