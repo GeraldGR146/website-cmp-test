@@ -18,7 +18,6 @@ export function Header() {
 
   const isContactPage = location.pathname.includes('/contact');
 
-  // ✅ FIXED EASING (Type-safe)
   const EASE: Easing = [0.25, 0.1, 0.25, 1];
   const DURATION = 0.45;
 
@@ -68,7 +67,7 @@ export function Header() {
 
   // 🎯 Logo logic
   const useWhiteLogo =
-    !isContactPage && (isAtTop || isDarkMode);
+      isDarkMode || (!isContactPage && isAtTop);
 
   const navItems = [
     { label: t.nav.home, path: `/${locale}` },
@@ -100,7 +99,6 @@ export function Header() {
     setLocale(newLocale);
   };
 
-  // 🎯 Header background logic (FIXED for contact page)
   const headerBg = isContactPage
     ? 'rgba(255,255,255,1)'
     : isAtTop

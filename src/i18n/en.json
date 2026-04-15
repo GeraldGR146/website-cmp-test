@@ -4,7 +4,7 @@
     "about": "About",
     "products": "Products",
     "contact": "Contact",
-    "tagline": "Engineering Manufacturing Excellence"
+    "tagline": "Engineering Quality Manufacturing Excellence"
   },
 
   "hero": {
@@ -17,38 +17,38 @@
     "trustedBy": "Trusted By Leading Brands",
 
     "featuredProducts": "Featured Products",
-    "featuredDesc": "Discover our range of high-quality metal components engineered for excellence",
+    "featuredDesc": "Discover our range of high-quality components engineered for excellence",
     "viewAll": "View All Products",
 
     "stats": {
       "years": "Years Experience",
       "clients": "Industrial Clients",
       "products": "Products Manufactured",
-      "certified": "ISO Certified"
+      "quality": "PPM Defect Rate"
     },
 
     "capabilities": {
       "title": "Manufacturing Capabilities",
       "subtitle": "Advanced production systems and engineering expertise allow us to manufacture reliable industrial components at scale.",
-      "precisionTitle": "Precision Machining",
-      "precisionDesc": "CNC milling and turning with high-tolerance precision manufacturing.",
+      "precisionTitle": "Metal Stamping and Welding",
+      "precisionDesc": "Manufacture specific metal components by utilizing metal forming techniques with high precision and efficiency and welding processes for strong and durable joints.",
       "fabricationTitle": "Custom Fabrication",
-      "fabricationDesc": "Tailored metal components based on client specifications.",
+      "fabricationDesc": "Provide the area and tools that may be required for the manufacturing process or repairs of the machinery and tools used.",
       "qualityTitle": "Quality Assurance",
-      "qualityDesc": "Strict inspection processes ensuring compliance with international standards.",
+      "qualityDesc": "Quality of the manufactured products is assured and verified at every step of the production processed by following the product quality standards and specification.",
       "productionTitle": "Mass Production",
-      "productionDesc": "Efficient large-scale production for industrial supply chains."
+      "productionDesc": "Efficient large-scale metal components production for automotive, household, and industrial sectors."
     },
 
     "story": {
       "engineeringTitle": "Engineering Excellence",
       "engineeringDesc": "Our engineering team collaborates closely with clients to transform requirements into manufacturable designs.",
 
-      "machineryTitle": "Advanced Machinery",
-      "machineryDesc": "Modern CNC equipment and automated production systems deliver consistent precision.",
+      "machineryTitle": "Reliable Machinery",
+      "machineryDesc": "Reliable machinery that meets craftsman’s standards. We take the time to get the calibration right so the final product is nothing short of excellent.",
 
       "qualityTitle": "Strict Quality Control",
-      "qualityDesc": "Every component undergoes rigorous inspection before reaching our clients."
+      "qualityDesc": "Every component undergoes rigorous step by step inspection before reaching our clients."
     },
 
     "cta": {
@@ -59,8 +59,8 @@
   },
 
   "about": {
-    "heroTitle": "About Us",
-    "heroSubtitle": "Building Excellence Since 1995",
+    "heroTitle": "About CMP",
+    "heroSubtitle": "Building Quality and Excellence Since 2014",
     "companyTitle": "PT Cipta Metalindo Persada",
     "companyDesc": "PT Cipta Metalindo Persada is a leading Indonesian manufacturer specializing in high-quality metal components for the automotive, household, and industrial sectors. With over 28 years of experience, we have established ourselves as a trusted partner for major brands across Southeast Asia. Our state-of-the-art manufacturing facilities, combined with rigorous quality control processes, ensure that every product meets international standards.",
     "companyDesc2": "We are committed to innovation, sustainability, and delivering exceptional value to our clients. Our team of skilled engineers and technicians works tirelessly to push the boundaries of metal manufacturing technology.",
@@ -139,7 +139,7 @@
     "formSuccess": "Thank you! Your message has been sent successfully.",
     "formError": "Failed to send message. Limit Reached.",
     "officeHours": "Office Hours",
-    "officeHoursValue": "Mon - Fri: 08:00 - 17:00 WIB",
+    "officeHoursValue": "Mon - Fri: 08:00 - 16:30 WIB",
     "findUs": "Find Us",
     "sendUsMessage": "Send Us a Message",
     "contactInformation": "Contact Information",

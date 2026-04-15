@@ -14,10 +14,17 @@ export interface Product {
 
 export type ProductCategory = 'all' | '2wheel' | '4wheel' | 'household' | 'screenOil' | 'rubber' | 'cnc' | 'pvc' | 'others';
 
+// src/types/index.ts
 export interface TimelineEvent {
   year: string;
   title: LocalizedField;
   description: LocalizedField;
+  image?: string;
+  video?: {
+    type: 'youtube' | 'vimeo' | 'local' | 'cloudinary';
+    src: string;
+    poster?: string;
+  };
 }
 
 export interface Stat {

@@ -8,7 +8,7 @@ import {
   ClockIcon,
   EnvelopeIcon,
   MapPinIcon,
-  PhoneIcon 
+  PhoneIcon
 } from '@heroicons/react/24/outline'
 
 export function Footer() {
@@ -127,7 +127,7 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <ClockIcon className="w-4 h-4 mt-[3px] text-white/40" />
                 <span className="text-sm text-white/70">
-                  Mon – Fri : 08:00 – 17:00
+                  {t.contact.officeHoursValue}
                 </span>
               </li>
 

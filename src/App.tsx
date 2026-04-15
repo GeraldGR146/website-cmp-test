@@ -6,7 +6,7 @@ import {
   Navigate,
   useNavigationType,
 } from 'react-router-dom';
-import React, { useLayoutEffect, useEffect } from 'react';
+import { useLayoutEffect} from 'react';
 import { LocaleProvider, useLocale } from '@/i18n/LocaleContext';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -30,7 +30,7 @@ function ScrollManager() {
       }
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     } else {
-      // 2. User Reloaded or hit Back/Forward: 
+      // 2. User Reloaded or hit Back/Forward:
       // Let the browser handle the scroll position automatically
       if (canManageScroll) {
         window.history.scrollRestoration = 'auto';
@@ -60,13 +60,13 @@ function AppLayout() {
             <Route path="/en/about" element={<AboutPage />} />
             <Route path="/en/products" element={<ProductsPage />} />
             <Route path="/en/contact" element={<ContactPage />} />
-            
+
             {/* Indonesian Routes */}
             <Route path="/id" element={<HomePage />} />
             <Route path="/id/about" element={<AboutPage />} />
             <Route path="/id/products" element={<ProductsPage />} />
             <Route path="/id/contact" element={<ContactPage />} />
-            
+
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>

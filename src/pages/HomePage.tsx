@@ -152,7 +152,7 @@ export function HomePage() {
         <div className="max-w-[1200px] mx-auto px-6 py-16 relative">
           <div className="text-center mb-12">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600 mb-3">
-              {locale === 'en' ? '✦ Trusted By' : '✦ Dipercaya Oleh'}
+              {locale === 'en' ? '⚙️ Trusted By' : '⚙️ Dipercaya Oleh'}
             </p>
             <h3 className="text-2xl font-bold text-slate-900">
               {t.home.trustedBy}
@@ -170,10 +170,10 @@ export function HomePage() {
           backgroundSize: '40px 40px'
         }} />
         <div className="max-w-[1200px] mx-auto px-6 py-20 grid grid-cols-2 md:grid-cols-4 gap-6 relative">
-          <Stat value="28+" label={t.home.stats.years} />
+          <Stat value="11+" label={t.home.stats.years} />
+          <Stat value="<100" label={t.home.stats.quality} />
           <Stat value="500+" label={t.home.stats.clients} />
           <Stat value="200+" label={t.home.stats.products} />
-          <Stat value="ISO" label={t.home.stats.certified} />
         </div>
       </section>
 
@@ -185,7 +185,7 @@ export function HomePage() {
         <div className="max-w-[1200px] mx-auto px-6 relative">
           <div className="max-w-2xl mb-16">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-600 mb-3">
-              {locale === 'en' ? '✦ What We Do' : '✦ Apa Yang Kami Lakukan'}
+              {locale === 'en' ? '⚙️ What We Do' : '⚙️ Apa Yang Kami Lakukan'}
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
               {t.home.capabilities.title}
@@ -207,14 +207,14 @@ export function HomePage() {
           <div className="grid gap-14 lg:grid-cols-[1fr_1.25fr] items-center mb-24">
             <div>
               <h1 className="text-5xl sm:text-6xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight">
-                {locale === 'en' ? 'Precision metal, built on conviction.' : 'Logam presisi, dibangun atas keyakinan.'}
+                {locale === 'en' ? 'Metal built on conviction' : 'Logam dibangun atas keyakinan'}
               </h1>
             </div>
             <div>
               <p className="text-lg text-slate-600 leading-relaxed font-light">
                 {locale === 'en'
-                  ? 'PT Cipta Metalindo Persada has spent 28 years becoming the foundry that manufacturers rely on. We do not promise speed or cheapness—we promise parts that fit, materials that hold, and delivery that works.'
-                  : 'PT Cipta Metalindo Persada telah menghabiskan 28 tahun menjadi foundry yang diandalkan oleh manufaktur. Kami tidak menjanjikan kecepatan atau harga murah—kami menjanjikan part yang pas, material yang kokoh, dan pengiriman yang bekerja.'}
+                  ? 'PT Cipta Metalindo Persada has spent 11 years becoming the foundry that manufacturers rely on. We combine engineering expertise, reliable machinery, and a relentless commitment to quality to deliver metal components that power industries forward.'
+                  : 'PT Cipta Metalindo Persada telah menghabiskan 11 tahun menjadi foundry yang diandalkan oleh manufaktur. Kami menggabungkan keahlian teknik, mesin yang andal, dan komitmen tanpa henti terhadap kualitas untuk menghasilkan komponen logam yang mendorong industri maju.'}
               </p>
             </div>
           </div>
@@ -253,7 +253,7 @@ export function HomePage() {
                   loading="eager"
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                
+
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-linear-to-t from-slate-950/95 via-slate-950/50 to-transparent" />
 
@@ -286,7 +286,7 @@ export function HomePage() {
             <div className="absolute inset-0 bg-linear-to-t from-slate-950/70 via-slate-950/30 to-transparent" />
             <div className="absolute left-6 bottom-6 rounded-2xl bg-white/98 px-6 py-4 shadow-xl backdrop-blur-md sm:left-8 sm:bottom-8 sm:px-8 sm:py-5">
               <p className="text-xs uppercase tracking-widest text-slate-600 font-semibold">
-                {locale === 'en' ? 'Since 1995' : 'Sejak 1995'}
+                {locale === 'en' ? 'Since 2014' : 'Sejak 2014'}
               </p>
               <p className="text-base font-semibold text-slate-900 mt-1">
                 {locale === 'en' ? 'Tangerang, Indonesia' : 'Tangerang, Indonesia'}
@@ -305,7 +305,7 @@ export function HomePage() {
           <div className="flex flex-col sm:flex-row justify-between gap-6 mb-16 items-start">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-300 mb-3">
-                {locale === "en" ? "✦ Product Range" : "✦ Pilihan Produk"}
+                {locale === "en" ? "⚙️ Product Range" : "⚙️ Pilihan Produk"}
               </p>
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
                 {t.home.featuredProducts}
@@ -338,32 +338,57 @@ export function HomePage() {
 
       {/* ───────────── CTA ───────────── */}
       <section className="relative bg-linear-to-br from-[#0B2A59] to-indigo-800 text-white py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }} />
+        {/* Background pattern */}
+        <div
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 1px)`,
+            backgroundSize: "50px 50px",
+          }}
+        />
+
+        {/* Glow accents */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
+
+        {/* Content */}
         <div className="max-w-2xl mx-auto px-6 text-center relative">
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-indigo-200 mb-4">
-            {locale === 'en' ? '✦ Get Started Today' : '✦ Mulai Hari Ini'}
-          </p>
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
-            {t.home.cta.title}
-          </h2>
-          <p className="mt-4 text-lg text-indigo-100 leading-relaxed">
-            {t.home.cta.desc}
+            {locale === "en" ? "⚙️ Start Your Partnership" : "⚙️ Mulai Kerja Sama"}
           </p>
 
-          <div className="mt-10">
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6 leading-tight">
+            {locale === "en"
+              ? "Precision Manufacturing You Can Rely On"
+              : "Solusi Manufaktur Presisi yang Dapat Anda Andalkan"}
+          </h2>
+
+          <p className="mt-4 text-lg text-indigo-100 leading-relaxed">
+            {locale === "en"
+              ? "From high-quality components to scalable production, we support your business with reliable manufacturing solutions."
+              : "Dari komponen berkualitas tinggi hingga produksi skala besar, kami mendukung bisnis Anda dengan solusi manufaktur yang andal."}
+          </p>
+
+          {/* Buttons */}
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+
+            {/* Primary Button - Products */}
             <Link
-              to={`/${locale}/contact`}
-              className="inline-flex items-center gap-3 bg-white text-indigo-700 px-8 py-4 text-base font-semibold rounded-2xl hover:bg-indigo-50 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform"
+              to={`/${locale}/products`}
+              className="inline-flex items-center justify-center gap-3 bg-white text-indigo-700 px-8 py-4 text-base font-semibold rounded-2xl hover:bg-indigo-50 transition-all duration-300 hover:shadow-2xl hover:scale-105 transform w-full sm:w-auto"
             >
-              {t.home.cta.button}
+              {locale === "en" ? "Explore Products" : "Lihat Produk"}
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
+            </Link>
+
+            {/* Secondary Button - Contact */}
+            <Link
+              to={`/${locale}/contact`}
+              className="inline-flex items-center justify-center gap-3 border border-white/30 text-white px-8 py-4 text-base font-semibold rounded-2xl hover:bg-white/10 transition-all duration-300 w-full sm:w-auto"
+            >
+              {locale === "en" ? "Contact Us" : "Hubungi Kami"}
             </Link>
           </div>
         </div>
