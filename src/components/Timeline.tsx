@@ -1272,7 +1272,7 @@ function TimelineHeader({ locale }: { locale: string }) {
             className="relative z-10 bg-clip-text text-transparent"
             style={{ backgroundImage: 'linear-gradient(135deg,#818cf8,#a78bfa,#22d3ee)' }}
           >
-            {locale === 'en' ? 'Precision' : 'Presisi'}
+            {locale === 'en' ? 'Innovation' : 'Inovasi'}
           </span>
           <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 200 10" fill="none" preserveAspectRatio="none">
             <motion.path

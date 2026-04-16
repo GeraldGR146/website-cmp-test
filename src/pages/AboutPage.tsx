@@ -4,59 +4,67 @@ import { HeroSection } from '@/components/HeroSection';
 import { Timeline } from '@/components/Timeline';
 import { useCountUp } from '@/hooks/useScrollAnimation';
 import { useLocale } from '@/i18n/LocaleContext';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useMemo, useRef, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { motion, useScroll, useTransform, MotionValue } from 'framer-motion';
+import { useMemo, useRef } from 'react';
 
 /* ══════════════════════════════════════
-   SHARED MOTION VARIANTS
+   TYPES
+   ══════════════════════════════════════ */
+type Locale = 'en' | 'id';
+
+interface LocalizedField {
+  en: string;
+  id: string;
+}
+
+/* ══════════════════════════════════════
+   MOTION VARIANTS
    ══════════════════════════════════════ */
 const fadeUp = {
-  initial: { opacity: 0, y: 28 },
+  initial:     { opacity: 0, y: 28 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: '-60px' },
-  transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
+  viewport:    { once: true, margin: '-60px' },
+  transition:  { duration: 0.75, ease: [0.22, 1, 0.36, 1] },
 } as const;
 
 const staggerWrap = {
-  initial: {},
+  initial:     {},
   whileInView: { transition: { staggerChildren: 0.1 } },
-  viewport: { once: true, margin: '-60px' },
+  viewport:    { once: true, margin: '-60px' },
 } as const;
 
 const staggerItem = {
-  initial: { opacity: 0, y: 22 },
+  initial:    { opacity: 0, y: 22 },
   whileInView: { opacity: 1, y: 0 },
   transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
 } as const;
 
-/* ══════════════════════════════════════
-   TEXT HIGHLIGHTER COMPONENT
-   ══════════════════════════════════════ */
-interface HighlightProps {
-  text: string;
-  highlights: string[];
-  gradientClass?: string;
-}
+const EASE = [0.22, 1, 0.36, 1] as const;
+const CMP_BLUE = '#1B4F9B';
 
+/* ══════════════════════════════════════
+   SHARED COMPONENTS
+   ══════════════════════════════════════ */
+
+/** Highlights specific words with a gradient */
 function HighlightedText({
   text,
   highlights,
-  gradientClass = 'bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent'
-}: HighlightProps) {
-  const words = text.split(' ');
-
+  gradientClass = 'bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent',
+}: {
+  text: string;
+  highlights: string[];
+  gradientClass?: string;
+}) {
   return (
     <>
-      {words.map((word, i) => {
-        const cleanWord = word.replace(/[.,!?]/g, '');
-        const isHighlighted = highlights.includes(cleanWord);
-        const punctuation = word.match(/[.,!?]$/)?.[0] || '';
-
+      {text.split(' ').map((word, i) => {
+        const clean       = word.replace(/[.,!?]$/g, '');
+        const punctuation = word.match(/[.,!?]$/)?.[0] ?? '';
         return (
           <span key={i}>
-            <span className={isHighlighted ? gradientClass : ''}>
-              {cleanWord}
+            <span className={highlights.includes(clean) ? gradientClass : ''}>
+              {clean}
             </span>
             {punctuation}{' '}
           </span>
@@ -66,276 +74,100 @@ function HighlightedText({
   );
 }
 
-/* ══════════════════════════════════════
-   SECTION LABEL
-   ══════════════════════════════════════ */
-function SectionLabel({ children, light = false }: { children: ReactNode; light?: boolean }) {
+/** Renders the first letter in CMP blue, rest in current color */
+function CMPWord({ children }: { children: string }) {
   return (
-    <p
-      className={`text-[10px] sm:text-xs uppercase tracking-[0.4em] mb-3 sm:mb-4 font-bold ${
-        light ? 'text-indigo-300/80' : 'text-indigo-600/70'
-      }`}
-    >
-      ⚙️ {children}
-    </p>
+    <span>
+      <span style={{ color: CMP_BLUE }}>{children[0]}</span>
+      {children.slice(1)}
+    </span>
   );
 }
 
 /* ══════════════════════════════════════
-   STAT CARD
+   STORY SECTION
    ══════════════════════════════════════ */
-const STAT_ACCENTS = [
-  { grad: 'from-indigo-500 to-violet-600', glow: 'rgba(99,102,241,0.35)' },
-  { grad: 'from-violet-500 to-fuchsia-600', glow: 'rgba(139,92,246,0.35)' },
-  { grad: 'from-sky-500 to-indigo-600', glow: 'rgba(14,165,233,0.35)' },
-  { grad: 'from-indigo-500 to-cyan-500', glow: 'rgba(6,182,212,0.35)' },
-];
+function StorySection({ locale, t }: { locale: Locale; t: any }) {
+  const headline = locale === 'en'
+    ? ['Capable.', 'Mastery.', 'Performance.']
+    : ['Cermat.',  'Mahir.',   'Pasti.'];
 
-function Stat({ stat, index }: { stat: (typeof stats)[number]; index: number }) {
-  const { locale } = useLocale();
-  const numeric = parseInt(stat.value.replace(/[^0-9]/g, ''), 10);
-  const suffix = stat.value.replace(/[0-9]/g, '');
-  const { ref, count } = useCountUp(numeric, 2000);
-  const { grad, glow } = STAT_ACCENTS[index % STAT_ACCENTS.length];
+  return (
+    <section className="relative bg-white border-b border-zinc-200">
+      <div className="max-w-[1000px] mx-auto px-6 sm:px-10 lg:px-16 py-24 lg:py-32">
+        <motion.div {...fadeUp}>
+
+          <span className="text-[10px] font-bold tracking-[0.35em] text-zinc-500 uppercase mb-6 block">
+            {locale === 'en' ? 'About Us' : 'Tentang Kami'}
+          </span>
+
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-zinc-900 leading-[1.05] tracking-tight mb-10">
+            {headline.map((word, i) => (
+              <span key={i}>
+                <CMPWord>{word}</CMPWord>
+                {i < 2 && <br />}
+              </span>
+            ))}
+          </h2>
+
+          <div className="space-y-6">
+            <p className="text-lg sm:text-xl leading-relaxed font-medium text-zinc-800">
+              {t.about.companyDesc}
+            </p>
+            <p className="text-base leading-relaxed text-zinc-600">
+              {t.about.companyDesc2}
+            </p>
+          </div>
+
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════
+   STATS SECTION
+   ══════════════════════════════════════ */
+function StatCard({ stat, locale }: { stat: typeof stats[number]; locale: Locale }) {
+  const raw    = parseInt(stat.value.replace(/\D/g, ''), 10);
+  const suffix = stat.value.replace(/\d/g, '');
+  const { ref, count } = useCountUp(raw, 2000);
 
   return (
     <motion.div
       ref={ref}
       variants={staggerItem}
-      className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10
-                 bg-white/5 backdrop-blur-md px-4 py-8 sm:p-9 text-center
-                 transition-all duration-500 hover:-translate-y-1"
-      style={{ '--glow': glow } as React.CSSProperties}
+      className="group relative p-8 lg:p-10 flex flex-col items-start"
     >
-      {/* top bar */}
-      <div className={`absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r ${grad}`} />
-
-      {/* ambient orb */}
-      <div
-        className="absolute -top-10 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full blur-3xl opacity-0
-                   group-hover:opacity-100 transition-opacity duration-700"
-        style={{ background: glow }}
-      />
-
-      {/* shimmer sweep */}
-      <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r
-                       from-transparent via-white/5 to-transparent group-hover:translate-x-full
-                       transition-transform duration-700" />
-
-      {/* text */}
-      <div className={`text-5xl xs:text-6xl sm:text-7xl font-black tabular-nums
-                      bg-gradient-to-br ${grad} bg-clip-text text-transparent drop-shadow
-                      inline-flex items-baseline gap-1`}>
-        <span>{count}</span>
-        <span className="ml-1">{suffix}</span>
+      <div className="flex items-baseline gap-1.5 mb-3">
+        <span className="text-4xl lg:text-5xl font-black text-white tabular-nums leading-none tracking-tight">
+          {count}
+        </span>
+        <span className="text-xl lg:text-2xl font-bold text-zinc-500 group-hover:text-indigo-400 transition-colors">
+          {suffix}
+        </span>
       </div>
 
-      <div className="mt-4 text-[9px] xs:text-[10px] sm:text-[11px]
-                      uppercase tracking-[0.35em] text-slate-400 leading-snug">
-        {stat.label[locale]}
-      </div>
+      <p className="text-sm lg:text-base font-medium text-zinc-400 leading-snug group-hover:text-zinc-200 transition-colors">
+        {(stat.label as LocalizedField)[locale]}
+      </p>
+
+      {/* Hover underline */}
+      <div className="absolute bottom-0 left-0 h-0.5 bg-indigo-500 w-0 group-hover:w-full transition-all duration-300" />
     </motion.div>
   );
 }
 
-/* ══════════════════════════════════════
-   STORY SECTION (full-bleed, seamless top)
-   ══════════════════════════════════════ */
-function StorySection({ locale, t }: { locale: string; t: any }) {
+function StatsSection({ locale }: { locale: Locale }) {
   return (
-    <section className="relative pt-24 pb-0 sm:pt-32 sm:pb-0 lg:pt-40 bg-slate-950 text-white overflow-hidden">
-      {/* layered ambients */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_20%_0%,rgba(99,102,241,0.18),transparent_55%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_85%_100%,rgba(56,189,248,0.14),transparent_50%)]" />
-
-      {/* grid */}
-      <div className="absolute inset-0 opacity-[0.035] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:52px_52px]" />
-
-      {/* content container */}
-      <div className="relative w-full px-5 sm:px-10 lg:px-20 xl:px-28">
+    <section className="relative bg-zinc-900 border-y border-zinc-800">
+      <div className="max-w-[1400px] mx-auto">
         <motion.div
-          className="grid lg:grid-cols-[1.2fr_0.8fr] gap-12 lg:gap-20 xl:gap-28 items-start"
-          initial="initial"
-          whileInView="whileInView"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={staggerWrap}
+          className="grid grid-cols-2 md:grid-cols-4 divide-x divide-zinc-800"
+          {...staggerWrap}
         >
-          {/* left */}
-          <motion.div variants={staggerItem}>
-            <SectionLabel light>{locale === 'en' ? 'Who We Are' : 'Siapa Kami'}</SectionLabel>
-
-            <h1 className="text-[2.2rem] xs:text-[2.8rem] sm:text-5xl lg:text-6xl xl:text-7xl
-                           font-black leading-[1.04] tracking-tight max-w-3xl">
-              {locale === 'en'
-                ? 'Built through decade of precision'
-                : 'Dibangun melalui dekade presisi'}
-            </h1>
-
-            <p className="mt-7 sm:mt-9 text-base sm:text-lg xl:text-xl text-slate-300
-                          leading-relaxed max-w-2xl">
-              {t.about.companyDesc}
-            </p>
-
-            {/* inline keyword pills */}
-            <div className="mt-8 flex flex-wrap gap-2.5">
-              {(locale === 'en'
-                ? ['Quality First', 'Engineered to Last', 'Trusted Process', 'Industry Ready']
-                : ['Kualitas Utama', 'Dibangun untuk Bertahan', 'Proses Terpercaya', 'Siap Industri']
-              ).map((kw) => (
-                <motion.span
-                  key={kw}
-                  variants={staggerItem}
-                  className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5
-                             backdrop-blur text-xs font-semibold text-slate-300 tracking-wide"
-                >
-                  {kw}
-                </motion.span>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* right glass card */}
-          <motion.div variants={staggerItem} className="relative">
-            {/* decorative blobs */}
-            <div className="absolute -z-10 -right-10 -top-10 w-40 h-40 rounded-full bg-indigo-500/20 blur-3xl" />
-            <div className="absolute -z-10 -left-10 -bottom-10 w-40 h-40 rounded-full bg-sky-500/20 blur-3xl" />
-
-            <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl
-                            p-8 sm:p-10 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
-              <p className="text-base sm:text-lg xl:text-xl text-slate-300 leading-relaxed">
-                {t.about.companyDesc2}
-              </p>
-
-              {/* mini stat strip */}
-              <div className="mt-8 pt-8 border-t border-white/10 grid grid-cols-2 gap-5">
-                {[
-                  { n: '40+', label: locale === 'en' ? 'Years Active' : 'Tahun Aktif' },
-                  { n: '200+', label: locale === 'en' ? 'Products Made' : 'Produk Dibuat' },
-                ].map(({ n, label }) => (
-                  <div key={label}>
-                    <div className="text-3xl font-black bg-gradient-to-r from-indigo-400 to-violet-400
-                                    bg-clip-text text-transparent tabular-nums">{n}</div>
-                    <div className="mt-1 text-[10px] uppercase tracking-[0.3em] text-slate-500">{label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ══════════════════════════════════════
-   STATS SECTION (full-bleed, seamless merge)
-   ══════════════════════════════════════ */
-function StatsSection({ locale }: { locale: string }) {
-  return (
-    <section className="relative bg-slate-950 pt-24 pb-24 sm:pt-32 sm:pb-32 overflow-hidden">
-      {/* gradient overlay for seamless blend */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/80 to-slate-950" />
-
-      {/* subtle radial accents */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px]
-                      bg-indigo-500/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[300px]
-                      bg-violet-500/5 rounded-full blur-3xl" />
-
-      <div className="relative w-full px-5 sm:px-10 lg:px-20 xl:px-28">
-        <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6"
-          initial="initial"
-          whileInView="whileInView"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={staggerWrap}
-        >
-          {stats.map((s, i) => <Stat key={i} stat={s} index={i} />)}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ══════════════════════════════════════
-   MISSION SECTION (full-bleed light)
-   ══════════════════════════════════════ */
-function MissionSection({ locale, t }: { locale: string; t: any }) {
-  const items = useMemo(
-    () => [
-      { text: t.about.mission1, image: 'https://images.unsplash.com/photo-1581093458791-9d42c52f2c77?w=900&q=80' },
-      { text: t.about.mission2, image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80' },
-      { text: t.about.mission3, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&q=80' },
-      { text: t.about.mission4, image: 'https://images.unsplash.com/photo-1581093458791-9d42c52f2c77?w=900&q=80' },
-    ],
-    [t],
-  );
-
-  return (
-    <section className="relative py-24 sm:py-32 lg:py-40 bg-gradient-to-br from-slate-50 via-white to-indigo-50/50 overflow-hidden">
-      {/* seamless top transition */}
-      <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-slate-950/5 to-transparent" />
-
-      {/* subtle dot grid */}
-      <div className="absolute inset-0 opacity-[0.025] bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] bg-[size:32px_32px]" />
-
-      <div className="relative w-full px-5 sm:px-10 lg:px-20 xl:px-28">
-        {/* header */}
-        <motion.div className="mb-14 sm:mb-20" {...fadeUp}>
-          <SectionLabel>{locale === 'en' ? 'Mission Statement' : 'Pernyataan Misi'}</SectionLabel>
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-            <h2 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900
-                           leading-tight max-w-2xl">
-              {t.about.missionTitle}
-            </h2>
-            <p className="text-sm sm:text-base text-slate-500 max-w-sm leading-relaxed lg:text-right shrink-0">
-              {locale === 'en'
-                ? 'The principles that guide every product, every process, and every partnership.'
-                : 'Prinsip yang membimbing setiap produk, proses, dan kemitraan.'}
-            </p>
-          </div>
-        </motion.div>
-
-        {/* card grid */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
-          initial="initial"
-          whileInView="whileInView"
-          viewport={{ once: true, margin: '-60px' }}
-          variants={staggerWrap}
-        >
-          {items.map((m, i) => (
-            <motion.div
-              key={i}
-              variants={staggerItem}
-              className="group relative h-72 sm:h-96 rounded-3xl overflow-hidden
-                         shadow-[0_8px_40px_rgba(15,23,42,0.1)] hover:shadow-[0_20px_60px_rgba(15,23,42,0.18)]
-                         transition-shadow duration-500"
-            >
-              <img
-                src={m.image}
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover
-                           group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/50 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/15 via-transparent to-transparent
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-              {/* index badge */}
-              <div className="absolute top-5 left-5 w-9 h-9 rounded-2xl
-                              bg-white/15 backdrop-blur border border-white/20
-                              text-white flex items-center justify-center text-xs font-bold">
-                {String(i + 1).padStart(2, '0')}
-              </div>
-
-              {/* text */}
-              <div className="absolute bottom-0 p-6">
-                <p className="text-white text-sm sm:text-base leading-relaxed line-clamp-4 sm:line-clamp-none">
-                  {m.text}
-                </p>
-              </div>
-            </motion.div>
+          {stats.map((stat, i) => (
+            <StatCard key={i} stat={stat} locale={locale} />
           ))}
         </motion.div>
       </div>
@@ -344,81 +176,142 @@ function MissionSection({ locale, t }: { locale: string; t: any }) {
 }
 
 /* ══════════════════════════════════════
-   VISION SECTION (full-bleed scroll)
+   MISSION SECTION
    ══════════════════════════════════════ */
-function VisionSection({ locale, t }: { locale: string; t: any }) {
+function MissionSection({ locale, t }: { locale: Locale; t: any }) {
+  const panels = useMemo(() => [
+    { title: locale === 'en' ? 'Quality'    : 'Kualitas',     text: t.about.mission1, image: 'https://images.unsplash.com/photo-1581093458791-9d42c52f2c77?w=900&q=80' },
+    { title: locale === 'en' ? 'Innovation' : 'Inovasi',      text: t.about.mission2, image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80' },
+    { title: locale === 'en' ? 'Safety'     : 'Keselamatan',  text: t.about.mission3, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&q=80' },
+    { title: locale === 'en' ? 'Integrity'  : 'Integritas',   text: t.about.mission4, image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=900&q=80' },
+  ], [t, locale]);
+
+  return (
+    <section className="relative overflow-hidden">
+      <div className="flex flex-col sm:flex-row w-full min-h-[600px] sm:h-[680px] lg:h-[760px]">
+
+        {/* Left label panel */}
+        <div className="relative sm:w-[20%] lg:w-[17%] shrink-0 min-h-[180px] sm:min-h-0 overflow-hidden">
+          <img
+            src="https://images.unsplash.com/photo-1513828583688-c52646db42da?w=800&q=80"
+            alt="Factory"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/40 via-zinc-950/60 to-zinc-950/85" />
+          <div className="absolute bottom-8 left-6 sm:bottom-10 sm:left-8">
+            <div className="w-6 h-[2px] bg-white/40 mb-4" />
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-black text-white uppercase tracking-tight leading-tight">
+              {locale === 'en' ? 'Mission' : 'Misi'}
+            </p>
+          </div>
+        </div>
+
+        {/* Expandable panels */}
+        {panels.map((panel, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
+            className="relative flex-1 min-h-[260px] sm:min-h-0 overflow-hidden
+                       border-l border-white/10 group cursor-default
+                       hover:flex-[1.4] transition-all duration-700"
+            style={{ transitionTimingFunction: 'cubic-bezier(0.22,1,0.36,1)' }}
+          >
+            <img
+              src={panel.image}
+              alt={panel.title}
+              className="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-700"
+            />
+            <div className="absolute inset-0 bg-zinc-950/55 group-hover:bg-zinc-950/45 transition-colors duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/95 via-zinc-950/30 to-transparent" />
+
+            {/* Vertical title */}
+            <div className="absolute top-0 left-0 bottom-0 w-12 sm:w-14 flex items-start pt-8 justify-center z-10">
+              <span
+                className="text-sm sm:text-base font-black text-white uppercase tracking-widest leading-none"
+                style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              >
+                {panel.title}
+              </span>
+            </div>
+
+            <div className="absolute top-8 left-14 bottom-8 w-px bg-white/15 z-10" />
+
+            <div className="absolute bottom-0 left-14 right-0 p-5 sm:p-6 lg:p-8 z-10">
+              <div className="w-6 h-[2px] bg-white/40 mb-3" />
+              <p className="text-white/85 text-sm sm:text-base leading-snug font-medium">
+                {panel.text}
+              </p>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ══════════════════════════════════════
+   VISION SECTION
+   ══════════════════════════════════════ */
+function VisionSection({ locale, t }: { locale: Locale; t: any }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
 
-  const s1 = useTransform(scrollYProgress, [0, 0.10, 0.22], [0, 1, 0]);
-  const s2 = useTransform(scrollYProgress, [0.22, 0.32, 0.44], [0, 1, 0]);
-  const s3 = useTransform(scrollYProgress, [0.44, 0.56, 0.72], [0, 1, 0]);
-  const s4 = useTransform(scrollYProgress, [0.72, 0.82, 1.00], [0, 1, 0]);
-
-  const y1 = useTransform(scrollYProgress, [0, 0.22], [30, 0]);
-  const y2 = useTransform(scrollYProgress, [0.22, 0.44], [30, 0]);
-  const y3 = useTransform(scrollYProgress, [0.44, 0.72], [30, 0]);
-  const y4 = useTransform(scrollYProgress, [0.72, 1.00], [30, 0]);
-
-  const scaleBg = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  // Build opacity / y transforms for 4 slides from a single helper
+  const makeSlide = (inStart: number, peak: number, outEnd: number) => ({
+    opacity: useTransform(scrollYProgress, [inStart, peak, outEnd], [0, 1, 0]),
+    y:       useTransform(scrollYProgress, [inStart, peak],         [30, 0]),
+  });
 
   const slides = [
     {
-      opacity: s1,
-      y: y1,
+      ...makeSlide(0.00, 0.10, 0.22),
       content: (
-        <h2 className="text-[2rem] xs:text-[2.6rem] sm:text-5xl lg:text-7xl font-black text-white max-w-xs sm:max-w-3xl leading-[1.02] tracking-tight">
-          <HighlightedText
-            text="Manufacturing is not about speed."
-            highlights={['not', 'speed']}
-          />
+        <h2 className="text-[2rem] sm:text-5xl lg:text-7xl font-black text-white max-w-3xl leading-[1.02] tracking-tight">
+          <HighlightedText text="Manufacturing is not about speed." highlights={['not', 'speed']} />
         </h2>
-      )
+      ),
     },
     {
-      opacity: s2,
-      y: y2,
+      ...makeSlide(0.22, 0.32, 0.44),
       content: (
-        <h2 className="text-[2rem] xs:text-[2.6rem] sm:text-5xl lg:text-7xl font-black text-white max-w-xs sm:max-w-3xl leading-[1.02] tracking-tight">
+        <h2 className="text-[2rem] sm:text-5xl lg:text-7xl font-black text-white max-w-3xl leading-[1.02] tracking-tight">
           <HighlightedText
             text="It is about delivering quality and defining values."
             highlights={['delivering', 'quality', 'defining', 'values']}
           />
         </h2>
-      )
+      ),
     },
     {
-      opacity: s3,
-      y: y3,
+      ...makeSlide(0.44, 0.56, 0.72),
       content: (
-        <div className="max-w-xs sm:max-w-2xl lg:max-w-3xl">
+        <div className="max-w-2xl lg:max-w-3xl">
           <p className="text-[10px] sm:text-xs tracking-[0.45em] text-indigo-300 mb-5 sm:mb-7 uppercase font-bold">
-            ⚙️ {locale === 'en' ? 'Vision' : 'Visi'}
+            {locale === 'en' ? 'Vision' : 'Visi'}
           </p>
-          <h2 className="text-2xl xs:text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-5 sm:mb-7 leading-tight">
+          <h2 className="text-2xl sm:text-4xl lg:text-6xl font-black text-white mb-5 sm:mb-7 leading-tight">
             {t.about.visionTitle}
           </h2>
-          <p className="text-sm xs:text-base sm:text-lg lg:text-xl text-slate-200 italic leading-relaxed">
+          <p className="text-sm sm:text-lg lg:text-xl text-slate-200 italic leading-relaxed">
             "{t.about.visionDesc}"
           </p>
         </div>
-      )
+      ),
     },
     {
-      opacity: s4,
-      y: y4,
+      ...makeSlide(0.72, 0.82, 1.00),
       content: (
-        <h2 className="text-[2.4rem] xs:text-[3rem] sm:text-6xl lg:text-8xl font-black text-white leading-[0.95] tracking-tight">
+        <h2 className="text-[2.4rem] sm:text-6xl lg:text-8xl font-black text-white leading-[0.95] tracking-tight">
           <span className="block">Engineering</span>
           <span className="block">Practice</span>
           <span className="block">
-          <HighlightedText
-            text="Built to last"
-            highlights={['Built', 'to', 'last']}
-          />
+            <HighlightedText text="Built to last" highlights={['Built', 'to', 'last']} />
           </span>
         </h2>
-      )
+      ),
     },
   ];
 
@@ -427,31 +320,28 @@ function VisionSection({ locale, t }: { locale: string; t: any }) {
       <div className="sticky top-0 h-screen overflow-hidden">
         <motion.img
           src="https://images.unsplash.com/photo-1492724441997-5dc865305da7?w=1800&q=80"
-          style={{ scale: scaleBg }}
+          style={{ scale: useTransform(scrollYProgress, [0, 1], [1, 1.1]) }}
           className="absolute inset-0 w-full h-full object-cover"
           alt=""
         />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/30 via-slate-950/65 to-slate-950/95" />
 
-        {/* progress bar */}
+        {/* Scroll progress bar */}
         <motion.div
           className="absolute top-0 left-0 h-[3px] bg-gradient-to-r from-indigo-500 via-violet-500 to-sky-500 z-10"
           style={{ width: useTransform(scrollYProgress, [0, 1], ['0%', '100%']) }}
         />
 
+        {/* Slides */}
         <div className="absolute inset-0 flex items-center justify-center text-center px-6 sm:px-16">
           {slides.map(({ opacity, y, content }, i) => (
-            <motion.div
-              key={i}
-              style={{ opacity, y }}
-              className="absolute"
-            >
+            <motion.div key={i} style={{ opacity, y }} className="absolute">
               {content}
             </motion.div>
           ))}
         </div>
 
-        {/* scroll cue */}
+        {/* Scroll hint */}
         <motion.div
           style={{ opacity: useTransform(scrollYProgress, [0, 0.08], [1, 0]) }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
@@ -469,62 +359,59 @@ function VisionSection({ locale, t }: { locale: string; t: any }) {
 }
 
 /* ══════════════════════════════════════
-   PROCESS SECTION (full-bleed scroll)
+   PROCESS SECTION
    ══════════════════════════════════════ */
-function ProcessSection({ locale }: { locale: string }) {
+function ProcessSection({ locale }: { locale: Locale }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
 
-  const steps = [
+  const steps = useMemo(() => [
     {
-      title: locale === 'en' ? 'Material Selection' : 'Pemilihan Material',
-      subtitle: locale === 'en' ? 'The right foundation for every build.' : 'Fondasi yang tepat untuk setiap produksi.',
-      image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1800&q=80'
+      title:    locale === 'en' ? 'Material Selection' : 'Pemilihan Material',
+      subtitle: locale === 'en' ? 'The right foundation for every build.'          : 'Fondasi yang tepat untuk setiap produksi.',
+      image:    'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1800&q=80',
     },
     {
-      title: locale === 'en' ? 'Precision Machining' : 'Proses Presisi',
-      subtitle: locale === 'en' ? 'Accuracy shaped through controlled execution.' : 'Akurasi dibentuk melalui eksekusi yang terkontrol.',
-      image: 'https://images.unsplash.com/photo-1581091870627-3a7b6c1c7b9c?w=1800&q=80'
+      title:    locale === 'en' ? 'Precision Machining' : 'Proses Presisi',
+      subtitle: locale === 'en' ? 'Accuracy shaped through controlled execution.'  : 'Akurasi dibentuk melalui eksekusi yang terkontrol.',
+      image:    'https://images.unsplash.com/photo-1581091870627-3a7b6c1c7b9c?w=1800&q=80',
     },
     {
-      title: locale === 'en' ? 'Quality Control' : 'Kontrol Kualitas',
+      title:    locale === 'en' ? 'Quality Control' : 'Kontrol Kualitas',
       subtitle: locale === 'en' ? 'Every detail checked. Every standard respected.' : 'Setiap detail diperiksa. Setiap standar dijaga.',
-      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1800&q=80'
+      image:    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1800&q=80',
     },
     {
-      title: locale === 'en' ? 'Delivery' : 'Pengiriman',
-      subtitle: locale === 'en' ? 'Reliable completion from factory to client.' : 'Penyelesaian yang andal dari pabrik ke klien.',
-      image: 'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1800&q=80'
+      title:    locale === 'en' ? 'Delivery' : 'Pengiriman',
+      subtitle: locale === 'en' ? 'Reliable completion from factory to client.'    : 'Penyelesaian yang andal dari pabrik ke klien.',
+      image:    'https://images.unsplash.com/photo-1513828583688-c52646db42da?w=1800&q=80',
     },
-  ];
+  ], [locale]);
 
-  const op0 = useTransform(scrollYProgress, [0.00, 0.12, 0.25], [0, 1, 0]);
-  const op1 = useTransform(scrollYProgress, [0.25, 0.37, 0.50], [0, 1, 0]);
-  const op2 = useTransform(scrollYProgress, [0.50, 0.62, 0.75], [0, 1, 0]);
-  const op3 = useTransform(scrollYProgress, [0.75, 0.87, 1.00], [0, 1, 0]);
-  const opacities = [op0, op1, op2, op3];
-
-  const sc0 = useTransform(scrollYProgress, [0.00, 0.25], [1.0, 1.07]);
-  const sc1 = useTransform(scrollYProgress, [0.25, 0.50], [1.0, 1.07]);
-  const sc2 = useTransform(scrollYProgress, [0.50, 0.75], [1.0, 1.07]);
-  const sc3 = useTransform(scrollYProgress, [0.75, 1.00], [1.0, 1.07]);
-  const scales = [sc0, sc1, sc2, sc3];
-
-  const y0 = useTransform(scrollYProgress, [0.00, 0.25], [48, 0]);
-  const y1 = useTransform(scrollYProgress, [0.25, 0.50], [48, 0]);
-  const y2 = useTransform(scrollYProgress, [0.50, 0.75], [48, 0]);
-  const y3 = useTransform(scrollYProgress, [0.75, 1.00], [48, 0]);
-  const yOffsets = [y0, y1, y2, y3];
+  // Build per-step motion values from segment boundaries
+  const segments = steps.map((_, i) => {
+    const seg  = 1 / steps.length;
+    const s    = i * seg;
+    const mid  = s + seg * 0.5;
+    const e    = s + seg;
+    return {
+      opacity: useTransform(scrollYProgress, [s, s + seg * 0.48, e], [0, 1, 0]),
+      scale:   useTransform(scrollYProgress, [s, e], [1.0, 1.07]),
+      y:       useTransform(scrollYProgress, [s, mid], [48, 0]),
+    };
+  });
 
   return (
     <section ref={ref} className="relative h-[380vh] sm:h-[420vh]">
       <div className="sticky top-0 h-screen overflow-hidden">
+
+        {/* Background images */}
         {steps.map((step, i) => (
           <motion.img
             key={i}
             src={step.image}
             alt=""
-            style={{ opacity: opacities[i], scale: scales[i] }}
+            style={{ opacity: segments[i].opacity, scale: segments[i].scale }}
             className="absolute inset-0 w-full h-full object-cover"
           />
         ))}
@@ -532,64 +419,58 @@ function ProcessSection({ locale }: { locale: string }) {
         <div className="absolute inset-0 bg-slate-950/55" />
         <div className="absolute inset-0 bg-gradient-to-b from-slate-950/25 via-transparent to-slate-950/85" />
 
-        {/* eyebrow */}
-        <div className="absolute top-8 sm:top-10 inset-x-0 text-center">
+        {/* Section label */}
+        <div className="absolute top-8 sm:top-10 inset-x-0 text-center pointer-events-none">
           <p className="text-[10px] sm:text-xs uppercase tracking-[0.45em] text-indigo-300 font-bold">
-            ⚙️ {locale === 'en' ? 'Our Process' : 'Proses Kami'}
+            {locale === 'en' ? 'Our Process' : 'Proses Kami'}
           </p>
         </div>
 
-        {/* step counter rail — right side on desktop */}
+        {/* Step indicators (desktop) */}
         <div className="absolute right-6 sm:right-10 top-1/2 -translate-y-1/2 hidden sm:flex flex-col gap-3">
           {steps.map((_, i) => (
-            <motion.div
-              key={i}
-              style={{ opacity: opacities[i] }}
-              className="text-right"
-            >
+            <motion.div key={i} style={{ opacity: segments[i].opacity }} className="text-right">
               <span className="text-[10px] font-bold tracking-widest text-slate-400 block mb-0.5">
                 {String(i + 1).padStart(2, '0')}
               </span>
               <motion.div
                 className="h-px bg-white ml-auto"
-                style={{ width: useTransform(opacities[i], [0, 1], ['8px', '28px']) }}
+                style={{ width: useTransform(segments[i].opacity, [0, 1], ['8px', '28px']) }}
               />
             </motion.div>
           ))}
         </div>
 
-        {/* content */}
+        {/* Slide content */}
         <div className="absolute inset-0 flex items-center justify-center px-6 sm:px-20 text-center">
           {steps.map((step, i) => (
             <motion.div
               key={i}
-              style={{ opacity: opacities[i], y: yOffsets[i] }}
+              style={{ opacity: segments[i].opacity, y: segments[i].y }}
               className="absolute max-w-xs sm:max-w-2xl lg:max-w-4xl"
             >
-              <div className="mb-4 sm:mb-5 text-xs sm:text-sm uppercase tracking-[0.4em] text-indigo-300 font-bold">
+              <p className="mb-4 sm:mb-5 text-xs sm:text-sm uppercase tracking-[0.4em] text-indigo-300 font-bold">
                 Step {String(i + 1).padStart(2, '0')}
-              </div>
-              <h2 className="text-[2.2rem] xs:text-[2.8rem] sm:text-5xl lg:text-7xl
-                             font-black text-white leading-[1.02] tracking-tight">
+              </p>
+              <h2 className="text-[2.2rem] sm:text-5xl lg:text-7xl font-black text-white leading-[1.02] tracking-tight">
                 {step.title}
               </h2>
-              <p className="mt-4 sm:mt-6 text-sm xs:text-base sm:text-lg lg:text-xl
-                            text-slate-300 max-w-xs sm:max-w-xl mx-auto leading-relaxed">
+              <p className="mt-4 sm:mt-6 text-sm sm:text-lg lg:text-xl text-slate-300 max-w-xl mx-auto leading-relaxed">
                 {step.subtitle}
               </p>
             </motion.div>
           ))}
         </div>
 
-        {/* bottom progress dots */}
+        {/* Dot indicators */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5">
           {steps.map((_, i) => (
             <motion.div
               key={i}
-              className="rounded-full bg-white transition-all duration-300"
+              className="rounded-full bg-white"
               style={{
-                opacity: useTransform(opacities[i], [0, 1], [0.25, 1]),
-                width:   useTransform(opacities[i], [0, 1], [6, 24]),
+                opacity: useTransform(segments[i].opacity, [0, 1], [0.25, 1]),
+                width:   useTransform(segments[i].opacity, [0, 1], [6, 24]),
                 height:  6,
               }}
             />
@@ -601,87 +482,12 @@ function ProcessSection({ locale }: { locale: string }) {
 }
 
 /* ══════════════════════════════════════
-   TIMELINE SECTION (full-bleed)
+   TIMELINE SECTION
    ══════════════════════════════════════ */
 function TimelineSection() {
   return (
-    <section className="relative bg-white overflow-hidden">
-      {/* subtle top border gradient */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-indigo-300/40 to-transparent" />
+    <section className="relative bg-white overflow-hidden border-t border-zinc-100">
       <Timeline events={timeline} />
-    </section>
-  );
-}
-
-/* ══════════════════════════════════════
-   CTA SECTION (full-bleed)
-   ══════════════════════════════════════ */
-function CTASection({ locale }: { locale: string }) {
-  return (
-    <section className="relative py-24 sm:py-32 lg:py-40 overflow-hidden bg-slate-950">
-      {/* ambients */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_65%_55%_at_50%_50%,rgba(99,102,241,0.18),transparent_65%)]" />
-      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-[size:48px_48px]" />
-
-      {/* decorative rings */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        {[480, 680, 880].map((s) => (
-          <div
-            key={s}
-            className="absolute rounded-full border border-white/5"
-            style={{ width: s, height: s }}
-          />
-        ))}
-      </div>
-
-      <motion.div
-        className="relative w-full px-5 sm:px-10 lg:px-20 text-center"
-        {...fadeUp}
-      >
-        <SectionLabel light>
-          {locale === 'en' ? 'Start Your Partnership' : 'Mulai Kerja Sama'}
-        </SectionLabel>
-
-        <h2 className="text-3xl xs:text-4xl sm:text-5xl lg:text-6xl xl:text-7xl
-                       font-black mb-5 sm:mb-7 text-white leading-tight max-w-4xl mx-auto">
-          {locale === 'en'
-            ? 'Precision Manufacturing, Built to Scale.'
-            : 'Manufaktur Presisi untuk Skala Besar.'}
-        </h2>
-
-        <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-slate-400
-                      max-w-2xl mx-auto leading-relaxed mb-10 sm:mb-12">
-          {locale === 'en'
-            ? 'Explore our products or connect with our team to develop reliable, high-quality manufacturing solutions.'
-            : 'Jelajahi produk kami atau hubungi tim kami untuk mengembangkan solusi manufaktur yang andal.'}
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            to={`/${locale}/products`}
-            className="group inline-flex items-center justify-center gap-3
-                       w-full sm:w-auto rounded-2xl bg-indigo-600
-                       px-8 py-4 sm:py-5 font-bold text-white text-sm sm:text-base
-                       shadow-[0_12px_40px_rgba(99,102,241,0.35)]
-                       hover:bg-indigo-500 hover:shadow-[0_16px_50px_rgba(99,102,241,0.5)]
-                       transition-all duration-300"
-          >
-            {locale === 'en' ? 'Explore Products' : 'Lihat Produk'}
-            <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
-          </Link>
-
-          <Link
-            to={`/${locale}/contact`}
-            className="inline-flex items-center justify-center
-                       w-full sm:w-auto rounded-2xl border border-white/15
-                       px-8 py-4 sm:py-5 font-semibold text-slate-300 text-sm sm:text-base
-                       hover:bg-white/5 hover:border-white/25 hover:text-white
-                       transition-all duration-300"
-          >
-            {locale === 'en' ? 'Contact Us' : 'Hubungi Kami'}
-          </Link>
-        </div>
-      </motion.div>
     </section>
   );
 }
@@ -699,14 +505,12 @@ export function AboutPage() {
         subtitle={t.about.heroSubtitle}
         backgroundVideo="https://res.cloudinary.com/dtny14e7t/video/upload/samples/dance-2.mp4"
       />
-
       <StorySection   locale={locale} t={t} />
       <StatsSection   locale={locale} />
       <MissionSection locale={locale} t={t} />
       <VisionSection  locale={locale} t={t} />
       <ProcessSection locale={locale} />
       <TimelineSection />
-      <CTASection     locale={locale} />
     </div>
   );
 }

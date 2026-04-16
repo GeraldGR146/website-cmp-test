@@ -1,5 +1,6 @@
-@import "tailwindcss";
 @import url('https://googleapis.com');
+@import "tailwindcss";
+
 
 @layer base {
   html {

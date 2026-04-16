@@ -19,15 +19,6 @@ export const timeline: TimelineEvent[] = [
   },
   {
     year: '2015',
-    title: { en: 'First Major Contract', id: 'Kontrak Besar Pertama' },
-    description: {
-      en: 'Secured our first major automotive parts contract, marking the beginning of rapid growth in the industry.',
-      id: 'Mendapatkan kontrak suku cadang otomotif besar pertama, menandai awal pertumbuhan pesat di industri.'
-    },
-    image: "https://res.cloudinary.com/dtny14e7t/image/upload/samples/zoom"
-  },
-  {
-    year: '2015',
     title: { en: 'ISO 9001 Certification', id: 'Sertifikasi ISO 9001' },
     description: {
       en: 'Achieved ISO 9001:2008 certification and in 2021: ISO 9001:2015 demonstrating our commitment to international quality standards.',
@@ -51,7 +42,7 @@ export const timeline: TimelineEvent[] = [
       en: 'Expansion of Balaraja factory to increase production capacity and meet growing demand.',
       id: 'Ekspansi pabrik Balaraja untuk meningkatkan kapasitas produksi dan memenuhi permintaan yang meningkat.'
     },
-    image: "https://res.cloudinary.com/dtny14e7t/image/upload/samples/coffee", 
+    image: "https://res.cloudinary.com/dtny14e7t/image/upload/samples/coffee",
   },
   {
     year: '2024',
