@@ -186,6 +186,10 @@ function StatCard({ stat, locale }: { stat: typeof stats[number]; locale: Locale
   );
 }
 
+
+/* ══════════════════════════════════════
+   STATS SECTION — CMP blue gradient
+   ══════════════════════════════════════ */
 function StatsSection({ locale }: { locale: Locale }) {
   return (
     <section
@@ -229,13 +233,31 @@ function StatsSection({ locale }: { locale: Locale }) {
           ))}
         </motion.div>
 
-        {/* Footer row */}
-        <div className="py-8 border-t border-white/10
-                        flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <p className="text-sm text-blue-100/50 max-w-md leading-relaxed">
-          </p>
-          <div className="shrink-0 text-xs font-bold tracking-widest text-blue-200/40 uppercase">
-            ISO 9001 ✓
+        {/* Footer row — ISO badge centered, no text */}
+        <div className="py-5 border-t border-white/10 flex items-center justify-center">
+          <div
+            className="flex items-center gap-3 px-6 py-3 rounded-xl border border-white/10"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+          >
+            <img
+              src="/ISO/ISO-9001.webp"
+              alt="ISO 9001:2015 Certified"
+              style={{
+                height: '40px',
+                width: 'auto',
+                objectFit: 'contain',
+                forcedColorAdjust: 'none',
+              } as React.CSSProperties}
+            />
+            <div className="w-px h-8 bg-white/15" />
+            <div className="flex flex-col">
+              <span className="text-sm font-black text-white leading-none tracking-tight">
+                ISO 9001
+              </span>
+              <span className="text-[10px] font-semibold text-blue-100/60 tracking-wider mt-0.5">
+                2015 CERTIFIED
+              </span>
+            </div>
           </div>
         </div>
       </div>
