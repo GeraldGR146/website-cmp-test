@@ -51,6 +51,10 @@
   }
 }
 
+img {
+  forced-color-adjust: none;
+}
+
 /* ===== SCROLL ANIMATIONS ===== */
 
 /* Fade In Up */
