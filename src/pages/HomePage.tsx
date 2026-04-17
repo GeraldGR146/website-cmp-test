@@ -69,18 +69,32 @@ React
 function ISO9001Logo({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <div className="iso-logo-wrapper shrink-0">
+      {/*
+        Wrap in an element that forces its own light rendering context.
+        Samsung Internet respects `color-scheme` on the element level
+        when combined with a solid background that matches the image destination.
+      */}
+      <div
+        style={{
+          colorScheme: "light",
+          backgroundColor: "transparent",
+          mixBlendMode: "screen",
+          lineHeight: 0,
+        }}
+      >
         <img
           src="/ISO/ISO-9001.webp"
           alt="ISO 9001:2015 Certified"
-          className="h-20 w-auto object-contain"
           style={{
-            filter: "brightness(0) invert(1)",
-            forcedColorAdjust: "none",
-          } as React.CSSProperties}
+            height: "80px",
+            width: "auto",
+            objectFit: "contain",
+            display: "block",
+          }}
         />
       </div>
 
+      {/* Text */}
       <div className="flex flex-col">
         <span className="text-xl font-black text-white leading-none tracking-tight">
           ISO 9001

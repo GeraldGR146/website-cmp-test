@@ -280,7 +280,6 @@ function MediaPlaceholder({
 function MediaImage({
   src,
   accent,
-  hov,
   label,
   iconFallback,
 }: {

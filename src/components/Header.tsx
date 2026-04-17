@@ -9,10 +9,9 @@ export function Header() {
   const navigate = useNavigate();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAtTop, setIsAtTop] = useState(true);
-  const [visible, setVisible] = useState(true);
-  const [scrolled, setScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isAtTop, setIsAtTop]               = useState(true);
+  const [visible, setVisible]               = useState(true);
+  const [scrolled, setScrolled]             = useState(false);
 
   const lastScrollY = useRef(0);
 
@@ -20,24 +19,6 @@ export function Header() {
 
   const EASE: Easing = [0.25, 0.1, 0.25, 1];
   const DURATION = 0.45;
-
-  // 🌙 Detect dark mode
-  useEffect(() => {
-    const checkDark = () => {
-      const isDark =
-        document.documentElement.classList.contains('dark') ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-      setIsDarkMode(isDark);
-    };
-
-    checkDark();
-
-    const media = window.matchMedia('(prefers-color-scheme: dark)');
-    media.addEventListener('change', checkDark);
-
-    return () => media.removeEventListener('change', checkDark);
-  }, []);
 
   // 🧠 Scroll logic
   useEffect(() => {
@@ -65,15 +46,22 @@ export function Header() {
     document.body.style.overflow = mobileMenuOpen ? 'hidden' : '';
   }, [mobileMenuOpen]);
 
-  // 🎯 Logo logic
-  const useWhiteLogo =
-      isDarkMode || (!isContactPage && isAtTop);
+  /*
+   * LOGO LOGIC — simplified
+   * White logo when:  at top of page (dark hero behind header) on non-contact pages
+   * Dark logo when:   scrolled down, or on contact page
+   *
+   * We always use the WHITE logo so Samsung Internet dark mode
+   * double-invert doesn't matter — white stays white regardless.
+   * The dark logo is only shown on white backgrounds (scrolled / contact).
+   */
+  const useWhiteLogo = !isContactPage && isAtTop;
 
   const navItems = [
-    { label: t.nav.home, path: `/${locale}` },
-    { label: t.nav.about, path: `/${locale}/about` },
+    { label: t.nav.home,     path: `/${locale}`          },
+    { label: t.nav.about,    path: `/${locale}/about`    },
     { label: t.nav.products, path: `/${locale}/products` },
-    { label: t.nav.contact, path: `/${locale}/contact` },
+    { label: t.nav.contact,  path: `/${locale}/contact`  },
   ];
 
   const isActive = (path: string) => {
@@ -85,135 +73,112 @@ export function Header() {
 
   const switchLocale = (newLocale: Locale) => {
     if (newLocale === locale) return;
-
     const segments = location.pathname.split('/').filter(Boolean);
-
     if (segments.length === 0) {
       navigate(`/${newLocale}`);
       setLocale(newLocale);
       return;
     }
-
     segments[0] = newLocale;
     navigate(`/${segments.join('/')}`, { replace: true });
     setLocale(newLocale);
   };
 
+  /* ── header background ── */
   const headerBg = isContactPage
     ? 'rgba(255,255,255,1)'
     : isAtTop
     ? 'rgba(255,255,255,0)'
-    : 'rgba(255,255,255,0.75)';
+    : 'rgba(255,255,255,0.85)';
 
-  const headerDarkBg = isContactPage
-    ? 'rgba(11,31,58,1)'
-    : 'rgba(11,31,58,0.8)';
+  /* ── text / icon color helpers ── */
+  const onDark  = !isContactPage && isAtTop;   // white text
 
   return (
     <>
-      {/* HEADER */}
+      {/* ══ HEADER ══ */}
       <motion.header
         initial={false}
         animate={{
           y: visible ? 0 : -90,
-          backdropFilter:
-            isAtTop && !isContactPage ? 'blur(0px)' : 'blur(16px)',
-          backgroundColor: isDarkMode ? headerDarkBg : headerBg,
+          backdropFilter: isAtTop && !isContactPage ? 'blur(0px)' : 'blur(16px)',
+          backgroundColor: headerBg,
         }}
         transition={{ duration: DURATION, ease: EASE }}
-        className="
-          fixed top-0 left-0 right-0 z-50
-          border-b border-black/5 dark:border-white/10
-          will-change-transform
-        "
+        className="fixed top-0 left-0 right-0 z-50 border-b border-black/5 will-change-transform"
+        /*
+         * Force the header to always render in a "light" colour-scheme context.
+         * This prevents Samsung Internet / Chrome Android dark mode from
+         * applying its own invert/recolor filter on the header and its children,
+         * which is what was causing the logo to go dark.
+         */
+        style={{ colorScheme: 'light' }}
       >
         {/* Accent line */}
         <div
           className={`
             bg-gradient-to-r from-blue-600 via-blue-500 to-blue-700
             transition-all duration-500
-            ${
-              isContactPage
-                ? 'h-[2px]'
-                : isAtTop
-                ? 'h-0 opacity-0'
-                : 'h-[2px]'
-            }
+            ${isContactPage ? 'h-[2px]' : isAtTop ? 'h-0 opacity-0' : 'h-[2px]'}
           `}
         />
 
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
-          <div
-            className={`flex items-center justify-between ${
-              scrolled ? 'h-16' : 'h-20'
-            }`}
-          >
-            {/* LOGO */}
+          <div className={`flex items-center justify-between ${scrolled ? 'h-16' : 'h-20'}`}>
+
+            {/* ── LOGO ── */}
             <Link to={`/${locale}`} className="flex items-center gap-4">
               <motion.img
-                src={
-                  useWhiteLogo
-                    ? '/logos/Logo_CMP_white.png'
-                    : '/logos/Logo_CMP.png'
-                }
-                animate={{
-                  scale: scrolled ? 0.9 : 1,
-                }}
+                /*
+                 * Always serve the correct pre-made file.
+                 * NO CSS filter / brightness / invert — that's what Samsung dark
+                 * mode was double-inverting. The image itself carries the color.
+                 */
+                src={useWhiteLogo ? '/logos/Logo_CMP_white.png' : '/logos/Logo_CMP.png'}
+                alt="PT Cipta Metalindo Persada"
+                animate={{ scale: scrolled ? 0.9 : 1 }}
                 transition={{ duration: DURATION, ease: EASE }}
-                className="w-32"
+                className="w-32 object-contain"
+                /*
+                 * Tell the browser: do NOT recolor this image.
+                 * forcedColorAdjust is the CSS spec property;
+                 * the vendor-prefixed version covers older Samsung Internet.
+                 */
+                style={{
+                  forcedColorAdjust: 'none',
+                } as React.CSSProperties}
               />
 
               <div className="hidden sm:flex flex-col">
                 <span
-                  className={`
-                    font-bold tracking-tight
-                    ${
-                      isContactPage
-                        ? 'text-blue-900 dark:text-white'
-                        : isAtTop
-                        ? 'text-white'
-                        : 'text-blue-900 dark:text-white'
-                    }
-                  `}
+                  className="font-bold tracking-tight transition-colors duration-300"
+                  style={{ color: onDark ? '#ffffff' : '#1e3a5f' }}
                 >
                   CIPTA METALINDO PERSADA
                 </span>
-
                 <span
-                  className={`
-                    text-[10px] uppercase tracking-widest
-                    ${
-                      isContactPage
-                        ? 'text-blue-600 dark:text-white/60'
-                        : isAtTop
-                        ? 'text-white/70'
-                        : 'text-blue-600 dark:text-white/60'
-                    }
-                  `}
+                  className="text-[10px] uppercase tracking-widest transition-colors duration-300"
+                  style={{ color: onDark ? 'rgba(255,255,255,0.7)' : '#2563eb' }}
                 >
                   {t.nav.tagline}
                 </span>
               </div>
             </Link>
 
-            {/* DESKTOP NAV */}
+            {/* ── DESKTOP NAV ── */}
             <nav className="hidden lg:flex items-center gap-6">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`
-                    text-sm font-bold uppercase transition-all duration-300
-                    ${
-                      isActive(item.path)
-                        ? 'text-blue-600 dark:text-blue-400'
-                        : isContactPage
-                        ? 'text-gray-700 dark:text-white/70 hover:text-blue-600'
-                        : isAtTop
-                        ? 'text-white/80 hover:text-white'
-                        : 'text-gray-700 dark:text-white/70 hover:text-blue-600'
-                    }
-                  `}
+                  className="text-sm font-bold uppercase transition-colors duration-300"
+                  style={{
+                    color: isActive(item.path)
+                      ? '#2563eb'
+                      : onDark
+                      ? 'rgba(255,255,255,0.85)'
+                      : '#374151',
+                  }}
                 >
                   {item.label}
                 </Link>
@@ -221,73 +186,75 @@ export function Header() {
 
               {/* LOCALE SWITCHER */}
               <div
-                className={`
-                  ml-4 flex rounded-lg overflow-hidden border
-                  ${
-                    isContactPage
-                      ? 'border-blue-600 dark:border-white/20'
-                      : isAtTop
-                      ? 'border-white/30'
-                      : 'border-blue-600 dark:border-white/20'
-                  }
-                `}
+                className="ml-4 flex rounded-lg overflow-hidden border transition-colors duration-300"
+                style={{
+                  borderColor: onDark ? 'rgba(255,255,255,0.3)' : '#2563eb',
+                }}
               >
-                <button
-                  onClick={() => switchLocale('en')}
-                  className={`px-3 py-1 text-xs font-bold ${
-                    locale === 'en'
-                      ? 'bg-blue-600 text-white'
-                      : isContactPage
-                      ? 'text-blue-600 dark:text-white'
-                      : isAtTop
-                      ? 'text-white'
-                      : 'text-blue-600 dark:text-white'
-                  }`}
-                >
-                  EN
-                </button>
-                <button
-                  onClick={() => switchLocale('id')}
-                  className={`px-3 py-1 text-xs font-bold ${
-                    locale === 'id'
-                      ? 'bg-blue-600 text-white'
-                      : isContactPage
-                      ? 'text-blue-600 dark:text-white'
-                      : isAtTop
-                      ? 'text-white'
-                      : 'text-blue-600 dark:text-white'
-                  }`}
-                >
-                  ID
-                </button>
+                {(['en', 'id'] as Locale[]).map((loc) => (
+                  <button
+                    key={loc}
+                    onClick={() => switchLocale(loc)}
+                    className="px-3 py-1 text-xs font-bold transition-colors duration-300"
+                    style={{
+                      backgroundColor: locale === loc ? '#2563eb'  : 'transparent',
+                      color:           locale === loc ? '#ffffff'
+                                     : onDark        ? '#ffffff'
+                                     :                 '#2563eb',
+                    }}
+                  >
+                    {loc.toUpperCase()}
+                  </button>
+                ))}
               </div>
             </nav>
 
-            {/* MOBILE BUTTON */}
+            {/* ── MOBILE HAMBURGER ── */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`
-                lg:hidden w-10 h-10 flex items-center justify-center rounded-xl
-                transition-all duration-300
-                ${
-                  isContactPage
-                    ? 'border border-blue-600 text-blue-600 dark:text-white'
-                    : isAtTop
-                    ? 'border border-white/30 text-white'
-                    : 'border border-blue-600 text-blue-600 dark:text-white'
-                }
-              `}
+              aria-label="Toggle menu"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl
+                         border transition-colors duration-300"
+              style={{
+                borderColor: onDark ? 'rgba(255,255,255,0.3)' : '#2563eb',
+                color:       onDark ? '#ffffff'               : '#2563eb',
+              }}
             >
-              ☰
+              {/* Animated hamburger lines */}
+              <span className="flex flex-col gap-[5px] w-5">
+                <motion.span
+                  animate={mobileMenuOpen
+                    ? { rotate: 45, y: 7, width: '100%' }
+                    : { rotate: 0,  y: 0, width: '100%' }}
+                  transition={{ duration: 0.25 }}
+                  className="block h-[2px] rounded-full bg-current"
+                />
+                <motion.span
+                  animate={mobileMenuOpen
+                    ? { opacity: 0, scaleX: 0 }
+                    : { opacity: 1, scaleX: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="block h-[2px] rounded-full bg-current"
+                />
+                <motion.span
+                  animate={mobileMenuOpen
+                    ? { rotate: -45, y: -7, width: '100%' }
+                    : { rotate: 0,   y: 0,  width: '100%' }}
+                  transition={{ duration: 0.25 }}
+                  className="block h-[2px] rounded-full bg-current"
+                />
+              </span>
             </button>
+
           </div>
         </div>
       </motion.header>
 
-      {/* MOBILE MENU */}
+      {/* ══ MOBILE MENU ══ */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
               className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
               initial={{ opacity: 0 }}
@@ -296,47 +263,64 @@ export function Header() {
               onClick={() => setMobileMenuOpen(false)}
             />
 
+            {/* Panel */}
             <motion.div
               initial={{ opacity: 0, scale: 0.96, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: -10 }}
+              animate={{ opacity: 1, scale: 1,    y: 0   }}
+              exit={{    opacity: 0, scale: 0.96, y: -10 }}
               transition={{ duration: DURATION, ease: EASE }}
-              className="fixed top-[80px] left-4 right-4 z-50 rounded-2xl bg-white/90 dark:bg-[#0B1F3A]/90 backdrop-blur-xl shadow-2xl"
+              className="fixed top-[80px] left-4 right-4 z-50 rounded-2xl shadow-2xl overflow-hidden"
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.95)',
+                backdropFilter:  'blur(20px)',
+                colorScheme:     'light',       /* ← same fix: force light context */
+              }}
             >
-              <div className="p-6 space-y-2">
+              <div className="p-6 space-y-1">
                 {navItems.map((item) => (
                   <Link
                     key={item.path}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block px-4 py-3 rounded-xl text-sm font-semibold uppercase text-gray-800 dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
+                    className="flex items-center justify-between px-4 py-3 rounded-xl
+                               text-sm font-semibold uppercase transition-colors duration-200"
+                    style={{
+                      color:           isActive(item.path) ? '#2563eb' : '#1e3a5f',
+                      backgroundColor: isActive(item.path) ? '#eff6ff' : 'transparent',
+                    }}
                   >
-                    {item.label}
+                    <span>{item.label}</span>
+                    {isActive(item.path) && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+                    )}
                   </Link>
                 ))}
 
-                <div className="pt-4 flex gap-2">
-                  <button
-                    onClick={() => switchLocale('en')}
-                    className={`flex-1 py-2 rounded ${
-                      locale === 'en'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-white/10'
-                    }`}
-                  >
-                    EN
-                  </button>
-                  <button
-                    onClick={() => switchLocale('id')}
-                    className={`flex-1 py-2 rounded ${
-                      locale === 'id'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 dark:bg-white/10'
-                    }`}
-                  >
-                    ID
-                  </button>
+                {/* Divider */}
+                <div className="h-px bg-blue-100 mx-4 my-2" />
+
+                {/* Locale switcher */}
+                <div className="flex gap-2 px-4 pt-2 pb-1">
+                  {(['en', 'id'] as Locale[]).map((loc) => (
+                    <button
+                      key={loc}
+                      onClick={() => { switchLocale(loc); setMobileMenuOpen(false); }}
+                      className="flex-1 py-2.5 rounded-xl text-sm font-black
+                                 uppercase transition-all duration-200"
+                      style={{
+                        backgroundColor: locale === loc ? '#1B4F9B' : '#f1f5f9',
+                        color:           locale === loc ? '#ffffff'  : '#1e3a5f',
+                      }}
+                    >
+                      {loc.toUpperCase()}
+                    </button>
+                  ))}
                 </div>
+
+                {/* Footer note */}
+                <p className="text-center text-[10px] text-blue-300/80 pt-2 pb-1 tracking-widest uppercase">
+                  PT Cipta Metalindo Persada
+                </p>
               </div>
             </motion.div>
           </>
