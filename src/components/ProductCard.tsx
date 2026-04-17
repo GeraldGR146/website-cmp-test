@@ -14,15 +14,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <div
-      className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100/80 shadow-sm 
-        hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-2 
+      className="group relative bg-white rounded-2xl overflow-hidden border border-gray-100/80 shadow-sm
+        hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 hover:-translate-y-2
         will-change-transform"
-      dir= "ltr" 
+      dir= "ltr"
     >
       {/* Category Badge - Floating */}
       <div className="absolute top-3 left-3 z-10">
         <span
-          className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest 
+          className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest
             text-white bg-[#0B2A59]/80 backdrop-blur-md px-3 py-1.5 rounded-full
             border border-white/20 shadow-lg
             group-hover:bg-[#1a4a8a] transition-all duration-300"
@@ -55,8 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <img
           src={product.image}
           alt={product.name[locale]}
-          className={`w-full h-full object-cover transition-all duration-700 ease-out
-            group-hover:scale-110 group-hover:rotate-1
+          className={`w-full h-full object-cover
             ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           loading="lazy"
           onLoad={() => setImageLoaded(true)}
@@ -64,17 +63,17 @@ export function ProductCard({ product }: ProductCardProps) {
         />
 
         {/* Multi-layer gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent 
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent
           opacity-0 group-hover:opacity-100 transition-all duration-500" />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B2A59]/30 to-transparent 
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B2A59]/30 to-transparent
           opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
         {/* View Details CTA */}
-        {/* <div className="absolute bottom-4 left-4 right-4 opacity-0 translate-y-6 
+        {/* <div className="absolute bottom-4 left-4 right-4 opacity-0 translate-y-6
           group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 delay-150 z-10">
           <button
             className="w-full bg-white/95 backdrop-blur-md text-[#0B2A59] text-sm font-bold py-3 rounded-xl
-              hover:bg-white transition-all duration-200 flex items-center justify-center gap-2 
+              hover:bg-white transition-all duration-200 flex items-center justify-center gap-2
               shadow-xl shadow-black/20 active:scale-[0.98]"
           >
             {t.products.viewDetails}
@@ -92,7 +91,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="p-5">
         {/* Product name */}
         <h3
-          className="text-base font-bold text-gray-900 group-hover:text-[#0B2A59] 
+          className="text-base font-bold text-gray-900 group-hover:text-[#0B2A59]
             transition-colors duration-300 line-clamp-1 leading-tight"
         >
           {product.name[locale]}
@@ -105,7 +104,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
 
       {/* Subtle accent line at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-[#0B2A59] to-blue-500 
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-[#0B2A59] to-blue-500
         transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
     </div>
   );

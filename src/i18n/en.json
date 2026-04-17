@@ -42,13 +42,13 @@
 
     "story": {
       "engineeringTitle": "Engineering Excellence",
-      "engineeringDesc": "Our engineering team collaborates closely with clients to transform requirements into manufacturable designs.",
+      "engineeringDesc": "We turn your designs into reality. Our team works with you to make sure every part is engineered for the best possible results.",
 
       "machineryTitle": "Reliable Machinery",
-      "machineryDesc": "Reliable machinery that meets craftsman’s standards. We take the time to get the calibration right so the final product is nothing short of excellent.",
+      "machineryDesc": "The backbone of our production. We have an elite number of high-efficiency machinery ensuring every product meets our high standards.",
 
       "qualityTitle": "Strict Quality Control",
-      "qualityDesc": "Every component undergoes rigorous step by step inspection before reaching our clients."
+      "qualityDesc": "Built on zero-defect standards. Every component is subjected to a relentless multi-stage inspection process to guarantee absolute reliability."
     },
 
     "cta": {

@@ -79,9 +79,9 @@ function useInView(
    ═════════════════════════════════════ */
 const ACCENTS = [
   { name: 'indigo',   border: 'border-indigo-500/50',  glow: 'rgba(99,102,241,0.6)',  hex: '#818cf8', icon: 'from-indigo-400 to-violet-500',  line: 'rgba(129,140,248,0.7)' },
-  { name: 'platinum', border: 'border-slate-400/40',   glow: 'rgba(203,213,225,0.5)', hex: '#cbd5e1', icon: 'from-slate-300 to-slate-500',    line: 'rgba(203,213,225,0.6)' },
+  { name: 'blue',     border: 'border-blue-500/50',    glow: 'rgba(59,130,246,0.6)',  hex: '#3b82f6', icon: 'from-blue-400 to-indigo-500',   line: 'rgba(59,130,246,0.7)'  },
   { name: 'cyan',     border: 'border-cyan-500/50',    glow: 'rgba(34,211,238,0.6)',  hex: '#22d3ee', icon: 'from-cyan-400 to-sky-600',       line: 'rgba(34,211,238,0.7)'  },
-  { name: 'emerald',  border: 'border-emerald-500/50', glow: 'rgba(52,211,153,0.6)',  hex: '#34d399', icon: 'from-emerald-400 to-teal-600',   line: 'rgba(52,211,153,0.7)'  },
+  { name: 'blue-dark', border: 'border-blue-600/50',   glow: 'rgba(29,78,216,0.6)',  hex: '#1d4ed8', icon: 'from-blue-500 to-blue-700',     line: 'rgba(29,78,216,0.7)'   },
   { name: 'violet',   border: 'border-violet-500/50',  glow: 'rgba(167,139,250,0.6)', hex: '#a78bfa', icon: 'from-violet-400 to-purple-600',  line: 'rgba(167,139,250,0.7)' },
 ] as const;
 
@@ -1153,7 +1153,7 @@ function TimelineItemDesktop({ event, index }: { event: TimelineEvent; index: nu
 /* ══════════════════════════════════════
    MOBILE ITEM
    ═════════════════════════════════════ */
-function TimelineItemMobile({ event, index, isLast }: {
+function TimelineItemMobile({ event, index }: {
   event: TimelineEvent; index: number; isLast: boolean;
 }) {
   const accent  = ACCENTS[index % ACCENTS.length];
