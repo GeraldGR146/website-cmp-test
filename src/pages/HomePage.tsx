@@ -597,17 +597,7 @@ export function HomePage() {
               </p>
               <div className="mt-6 h-[3px] w-16 bg-blue-400 rounded-full" />
             </div>
-
-            {/* ISO badge */}
-            <div
-              className="absolute right-10 bottom-10 px-6 py-3.5 text-sm font-bold rounded-xl shadow-2xl text-white
-                         border border-white/20 backdrop-blur-sm"
-              style={{ backgroundColor: `${CMP_BLUE}cc` }}
-            >
-              ISO 9001 ✓
-            </div>
           </motion.div>
-
         </div>
       </section>
 
