@@ -1,6 +1,12 @@
-@import url('https://googleapis.com');
 @import "tailwindcss";
-
+@font-face {
+  font-family: 'League Spartan';
+  /* Check your folder path! Is it /fonts/ or /assets/fonts/? */
+  src: url('/fonts/leaguespartan.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   html {
@@ -10,24 +16,26 @@
   }
 
   body {
-    font-family: 'Michroma', sans-serif;
+    /* Fixed: Removed the double @layer nesting */
+    font-family: 'League Spartan', system-ui;
+    font-style: normal !important;
     line-height: 1.1;
     color: #000;
-    letter-spacing: 0.02em;
     overflow-x: hidden;
   }
 
   h1, h2, h3, .hero-title, .company-name {
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    line-height: 1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 0.9;
     text-transform: uppercase;
   }
 
   nav a, button, .cta-text {
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 700;
+    letter-spacing: 0.05em;
   }
 
   * {

@@ -129,21 +129,11 @@ export function Header() {
             {/* ── LOGO ── */}
             <Link to={`/${locale}`} className="flex items-center gap-4">
               <motion.img
-                /*
-                 * Always serve the correct pre-made file.
-                 * NO CSS filter / brightness / invert — that's what Samsung dark
-                 * mode was double-inverting. The image itself carries the color.
-                 */
                 src={useWhiteLogo ? '/logos/Logo_CMP_white.png' : '/logos/Logo_CMP.png'}
                 alt="PT Cipta Metalindo Persada"
                 animate={{ scale: scrolled ? 0.9 : 1 }}
                 transition={{ duration: DURATION, ease: EASE }}
                 className="w-32 object-contain"
-                /*
-                 * Tell the browser: do NOT recolor this image.
-                 * forcedColorAdjust is the CSS spec property;
-                 * the vendor-prefixed version covers older Samsung Internet.
-                 */
                 style={{
                   forcedColorAdjust: 'none',
                 } as React.CSSProperties}
