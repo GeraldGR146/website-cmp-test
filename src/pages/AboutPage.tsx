@@ -4,8 +4,8 @@ import { HeroSection } from '@/components/HeroSection';
 import { Timeline } from '@/components/Timeline';
 import { useCountUp } from '@/hooks/useScrollAnimation';
 import { useLocale } from '@/i18n/LocaleContext';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 /* ══════════════════════════════════════
@@ -65,6 +65,433 @@ function CMPWord({ children }: { children: string }) {
 }
 
 /* ══════════════════════════════════════
+   MOBILE PARALLAX SLIDE (NEW "WOW" COMPONENT)
+══════════════════════════════════════ */
+interface MobileParallaxSlideProps {
+  image: string;
+  children: React.ReactNode;
+  index: number;
+  total: number;
+  accentTop?: React.ReactNode;
+}
+
+function MobileParallaxSlide({ image, children, index, total, accentTop }: MobileParallaxSlideProps) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'end start'],
+  });
+
+  const imgY = useTransform(scrollYProgress, [0, 1], ['-12%', '12%']);
+  const imgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.08, 1.12, 1.08]);
+  const contentY = useTransform(scrollYProgress, [0.1, 0.35], [40, 0]);
+  const contentOpacity = useTransform(scrollYProgress, [0.1, 0.35], [0, 1]);
+
+  return (
+    <div ref={ref} className="relative overflow-hidden" style={{ height: '100svh' }}>
+      <motion.div
+        className="absolute inset-0 will-change-transform"
+        style={{ y: imgY, scale: imgScale }}
+      >
+        <img
+          src={image}
+          alt=""
+          className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
+        />
+      </motion.div>
+
+      <div
+        className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-[0.18]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+          backgroundSize: '160px 160px',
+        }}
+      />
+
+      <div className="absolute inset-0 bg-linear-to-t from-[#020617] via-[#020617]/70 to-[#020617]/10" />
+      <div className="absolute inset-0 bg-linear-to-r from-[#020617]/70 via-transparent to-transparent" />
+
+      {index === 0 && (
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-600 via-blue-400 to-transparent z-20" />
+      )}
+
+      <div className="absolute top-5 left-5 w-5 h-5 border-t-2 border-l-2 border-blue-400/40 z-20" />
+      <div className="absolute top-5 right-5 w-5 h-5 border-t-2 border-r-2 border-blue-400/40 z-20" />
+      <div className="absolute bottom-5 left-5 w-5 h-5 border-b-2 border-l-2 border-blue-400/40 z-20" />
+      <div className="absolute bottom-5 right-5 w-5 h-5 border-b-2 border-r-2 border-blue-400/40 z-20" />
+
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {Array.from({ length: total }).map((_, di) => (
+          <div
+            key={di}
+            className={`rounded-full transition-all duration-500 ${
+              di === index
+                ? 'w-8 h-[3px] bg-blue-400'
+                : 'w-1.5 h-[3px] bg-white/20'
+            }`}
+          />
+        ))}
+      </div>
+
+      {accentTop && (
+        <div className="absolute top-14 left-6 z-20">{accentTop}</div>
+      )}
+
+      <motion.div
+        className="absolute inset-x-0 bottom-0 z-10 px-6 pb-12 pt-32"
+        style={{ y: contentY, opacity: contentOpacity }}
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
+   MOBILE VISION & PROCESS WRAPPER COMPONENTS
+══════════════════════════════════════ */
+function AnimatedHeadline({ children, isActive }: { children: React.ReactNode; isActive: boolean }) {
+  return (
+    <h2 className="text-4xl leading-[0.9] tracking-[-0.07em] font-black uppercase text-white">
+      <motion.span
+        initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+        animate={
+          isActive
+            ? { opacity: 1, y: 0, filter: 'blur(0px)' }
+            : { opacity: 0, y: 30, filter: 'blur(8px)' }
+        }
+        transition={{ duration: 0.7, ease: EASE }}
+        className="inline-block"
+      >
+        {children}
+      </motion.span>
+    </h2>
+  );
+}
+
+function MobileVisionSlides({
+  visionBlocks,
+}: {
+  visionBlocks: {
+    number: string;
+    image: string;
+    eyebrow: string;
+    title: React.ReactNode;
+    description?: string;
+    align: 'left' | 'right';
+  }[];
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observers = slideRefs.current.map((el, i) => {
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveIndex(i); },
+        { threshold: 0.5 },
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((obs) => obs?.disconnect());
+  }, [visionBlocks]);
+
+  return (
+    <div className="relative">
+      <div className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 pointer-events-none">
+        {visionBlocks.map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              height:          i === activeIndex ? 28 : 6,
+              backgroundColor: i === activeIndex ? '#3b82f6' : 'rgba(255,255,255,0.2)',
+              borderRadius:    9999,
+            }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="w-[3px]"
+          />
+        ))}
+      </div>
+
+      {visionBlocks.map((block, i) => (
+        <div key={block.number} ref={(el) => { slideRefs.current[i] = el; }}>
+          <MobileParallaxSlide
+            image={block.image}
+            index={i}
+            total={visionBlocks.length}
+            accentTop={
+              <p className="font-mono text-[10px] tracking-[0.38em] text-blue-300/60 uppercase">
+                {block.eyebrow}
+              </p>
+            }
+          >
+            {/* UPDATED: Wrap all content in a motion.div for consistent animation */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, filter: 'blur(8px)' }}
+              animate={
+                activeIndex === i
+                  ? { opacity: 1, y: 0, filter: 'blur(0px)' }
+                  : { opacity: 0, y: 30, filter: 'blur(8px)' }
+              }
+              transition={{ duration: 0.7, ease: EASE }}
+            >
+              {block.number === '03' ? (
+                <div className="relative bg-slate-950/70 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 shadow-[0_24px_80px_rgba(0,0,0,0.6)] overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-600 via-blue-400 to-blue-600" />
+                  <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-blue-600/20 blur-2xl pointer-events-none" />
+                  <p className="font-mono text-[10px] tracking-[0.32em] text-blue-300/70 mb-3 uppercase">
+                    {block.eyebrow}
+                  </p>
+                  <h2 className="text-3xl font-black text-white tracking-[-0.04em] leading-[0.95] mb-4">
+                    {block.title}
+                  </h2>
+                  <div className="w-10 h-0.5 bg-blue-500 mb-4" />
+                  <p className="text-blue-100/80 text-sm leading-relaxed">{block.description}</p>
+                </div>
+              ) : (
+                <div>
+                  <div
+                    className={`absolute right-3 bottom-20 font-black text-[7rem] leading-none -tracking-widest text-white/4 select-none pointer-events-none ${block.align === 'right' ? 'left-3 right-auto' : ''}`}
+                  >
+                    {block.number}
+                  </div>
+                  <h2 className="text-4xl leading-[0.9] tracking-[-0.07em] font-black uppercase text-white">
+                    {block.title}
+                  </h2>
+                  <motion.div
+                    className={`h-0.5 w-16 bg-blue-500 mt-5 ${block.align === 'right' ? 'ml-auto' : ''}`}
+                    initial={{ scaleX: 0, originX: block.align === 'right' ? 1 : 0 }}
+                    animate={{ scaleX: activeIndex === i ? 1 : 0 }}
+                    transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+                  />
+                  <div className="mt-6 flex items-center gap-4">
+                    <div className="h-px flex-1 bg-white/6" />
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </MobileParallaxSlide>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function MobileProcessSlides({
+  steps,
+  locale,
+}: {
+  steps: { number: string; title: string; subtitle: string; image: string; tag: string }[];
+  locale: Locale;
+}) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    const observers = slideRefs.current.map((el, i) => {
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveIndex(i); },
+        { threshold: 0.5 },
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((obs) => obs?.disconnect());
+  }, [steps]);
+
+  return (
+    <div className="relative">
+      <div className="fixed left-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3 pointer-events-none">
+        {steps.map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              height:          i + 1 === activeIndex ? 28 : 6,
+              backgroundColor: i + 1 === activeIndex ? '#3b82f6' : 'rgba(255,255,255,0.2)',
+              borderRadius:    9999,
+            }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="w-[3px]"
+          />
+        ))}
+      </div>
+
+      <div
+        ref={(el) => { slideRefs.current[0] = el; }}
+        style={{ height: '100svh' }}
+        className="relative flex flex-col justify-center overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[#020617]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_20%_40%,rgba(59,130,246,0.15),transparent)]" />
+        <div
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)`,
+            backgroundSize: '36px 36px',
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 -right-24 w-64 h-64 rounded-full bg-blue-600/20 blur-3xl pointer-events-none"
+          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        />
+
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-600 via-blue-400 to-transparent" />
+        <div className="absolute top-5 left-5 w-5 h-5 border-t-2 border-l-2 border-blue-400/40" />
+        <div className="absolute top-5 right-5 w-5 h-5 border-t-2 border-r-2 border-blue-400/40" />
+        <div className="absolute bottom-5 left-5 w-5 h-5 border-b-2 border-l-2 border-blue-400/40" />
+        <div className="absolute bottom-5 right-5 w-5 h-5 border-b-2 border-r-2 border-blue-400/40" />
+
+        <motion.div
+          className="relative z-10 px-8"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: EASE }}
+        >
+          <p className="font-mono text-[10px] tracking-[0.4em] text-blue-300/65 uppercase mb-6">
+            Engineering Quality
+          </p>
+
+          <div className="overflow-hidden">
+            {(locale === 'en'
+              ? ['Manufacturing', 'Excellence']
+              : ['Manufacturing', 'Excellence']
+            ).map((word, wi) => (
+              <motion.div
+                key={wi}
+                initial={{ y: '110%' }}
+                whileInView={{ y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.75, delay: wi * 0.12, ease: EASE }}
+                className="overflow-hidden"
+              >
+                <span
+                  className={`block text-[2.4rem] leading-[0.85] tracking-[-0.09em] font-black uppercase ${
+                    wi === 2 ? 'text-blue-400' : 'text-white'
+                  }`}
+                >
+                  {word}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            className="mt-7 w-20 h-0.5 bg-blue-500"
+            initial={{ scaleX: 0, originX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
+          />
+
+          <div className="mt-8 flex flex-wrap gap-2">
+            {steps.map((step, si) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, scale: 0.85 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.6 + si * 0.07, ease: EASE }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5"
+              >
+                <span className="font-mono text-[9px] tracking-[0.25em] text-blue-300/60">{step.number}</span>
+                <span className="text-[11px] text-white/50 uppercase tracking-[0.15em]">{step.tag}</span>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            className="mt-12 flex items-center gap-3"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <div className="flex flex-col gap-1">
+              <div className="w-5 h-px bg-blue-500/60" />
+              <div className="w-3 h-px bg-blue-500/30" />
+            </div>
+            <p className="text-[10px] uppercase tracking-[0.3em] text-white/30">
+              {locale === 'en' ? 'Scroll to explore' : 'Gulir untuk jelajahi'}
+            </p>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {steps.map((step, i) => (
+        <div key={step.number} ref={(el) => { slideRefs.current[i + 1] = el; }}>
+          <MobileParallaxSlide
+            image={step.image}
+            index={i}
+            total={steps.length}
+            accentTop={
+              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/10 bg-black/30 backdrop-blur-sm">
+                <span className="font-mono text-[10px] tracking-[0.28em] text-blue-300">{step.number}</span>
+                <div className="w-5 h-px bg-blue-500/60" />
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">
+                  {locale === 'en' ? 'Production Stage' : 'Tahapan Produksi'}
+                </span>
+              </div>
+            }
+          >
+            <div className="absolute bottom-16 right-3 font-black text-[7rem] leading-none -tracking-widest text-white/5 select-none pointer-events-none">
+              {step.number}
+            </div>
+
+            <div className="overflow-hidden mb-5">
+              <motion.h2
+                className="text-[2.8rem] leading-[0.88] tracking-[-0.06em] font-black text-white uppercase"
+                initial={{ y: '110%', opacity: 0 }}
+                animate={
+                  activeIndex === i + 1
+                    ? { y: 0, opacity: 1 }
+                    : { y: '110%', opacity: 0 }
+                }
+                transition={{ duration: 0.65, ease: EASE }}
+              >
+                {step.title}
+              </motion.h2>
+            </div>
+
+            <motion.div
+              className="flex items-center gap-3 mb-5"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: activeIndex === i + 1 ? 1 : 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <motion.div
+                className="h-0.5 bg-blue-500 rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: activeIndex === i + 1 ? 48 : 0 }}
+                transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+              />
+              <div className="h-0.5 flex-1 bg-white/6 rounded-full" />
+            </motion.div>
+
+            <motion.p
+              className="text-blue-100/75 text-[15px] leading-relaxed max-w-sm"
+              initial={{ opacity: 0, y: 12 }}
+              animate={
+                activeIndex === i + 1
+                  ? { opacity: 1, y: 0 }
+                  : { opacity: 0, y: 12 }
+              }
+              transition={{ duration: 0.55, delay: 0.3, ease: EASE }}
+            >
+              {step.subtitle}
+            </motion.p>
+          </MobileParallaxSlide>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════
    STORY SECTION
 ══════════════════════════════════════ */
 function StorySection({ locale, t }: { locale: Locale; t: any }) {
@@ -76,7 +503,7 @@ function StorySection({ locale, t }: { locale: Locale; t: any }) {
     <section className="relative bg-white border-b border-zinc-100 overflow-hidden">
       <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ backgroundColor: CMP_BLUE }} />
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.25]"
+        className="absolute inset-0 pointer-events-none opacity-25"
         style={{ backgroundImage: `radial-gradient(circle, #94a3b8 1px, transparent 1px)`, backgroundSize: '28px 28px' }}
       />
       <div className="w-full px-6 sm:px-10 lg:px-20 xl:px-28 py-24 lg:py-32 relative z-10">
@@ -150,7 +577,7 @@ function StatsSection({ locale }: { locale: Locale }) {
         </motion.div>
         <div className="py-6 flex justify-center lg:justify-end">
           <div className="flex items-center gap-4 bg-white/5 border border-white/10 px-5 py-2.5 rounded-lg backdrop-blur-sm shadow-xl">
-            <img src="/ISO/ISO-9001.webp" alt="ISO 9001:2015 Certified" className="h-[36px] w-auto object-contain drop-shadow-md" />
+            <img src="/ISO/ISO-9001.webp" alt="ISO 9001:2015 Certified" className="h-9 w-auto object-contain drop-shadow-md" />
             <div className="w-px h-8 bg-white/20" />
             <div className="flex flex-col">
               <span className="font-bold text-sm text-white leading-none tracking-wide">ISO 9001</span>
@@ -172,8 +599,8 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
   const panels = useMemo(() => [
     { title: locale === 'en' ? 'Quality'   : 'Kualitas',    text: t.about.mission1, image: 'https://images.unsplash.com/photo-1581093458791-9d42c52f2c77?w=900&q=80' },
     { title: locale === 'en' ? 'Teamwork'  : 'Kerja Sama',  text: t.about.mission2, image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&q=80' },
-    { title: locale === 'en' ? 'Safety'    : 'Keselamatan', text: t.about.mission3, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&q=80' },
-    { title: locale === 'en' ? 'Integrity' : 'Integritas',  text: t.about.mission4, image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=900&q=80' },
+    { title: locale === 'en' ? 'Integrity' : 'Integritas',  text: t.about.mission3, image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=900&q=80' },
+    { title: locale === 'en' ? 'Safety'    : 'Keselamatan', text: t.about.mission4, image: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=900&q=80' },
   ], [t, locale]);
 
   const missionStatement = locale === 'en'
@@ -182,23 +609,18 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
 
   return (
     <section className="relative overflow-hidden bg-slate-950">
-
-      {/* ══════════ MOBILE ══════════ */}
       <div className="lg:hidden">
-
-        {/* Hero intro card */}
         <div className="relative overflow-hidden min-h-[380px] flex flex-col justify-end">
           <img
             src="https://images.unsplash.com/photo-1513828583688-c52646db42da?w=800&q=80"
             alt="Factory"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 to-transparent" />
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-blue-400 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-slate-950 via-slate-950/70 to-slate-950/20" />
+          <div className="absolute inset-0 bg-linear-to-r from-slate-950/60 to-transparent" />
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-linear-to-r from-blue-600 via-blue-400 to-transparent" />
           <div className="absolute top-5 left-5 w-4 h-4 border-t border-l border-blue-400/40" />
           <div className="absolute top-5 right-5 w-4 h-4 border-t border-r border-blue-400/40" />
-
           <div className="relative z-10 p-8 pb-10">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -208,15 +630,13 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
             >
               <p className="font-mono text-[10px] tracking-[0.38em] text-blue-300/70 mb-4 uppercase">Core Values</p>
               <h2 className="text-5xl font-black text-white uppercase tracking-tight leading-[0.95] mb-5">
-                {locale === 'en' ? <>Our<br />Mission</> : <>Misi<br />Kami</>}
+                {locale === 'en' ? (<>Our<br />Mission</>) : (<>Misi<br />Kami</>)}
               </h2>
-              <div className="w-12 h-[2px] bg-blue-500 mb-6" />
+              <div className="w-12 h-0.5 bg-blue-500 mb-6" />
               <p className="text-blue-100/75 text-sm leading-relaxed font-medium max-w-xs">{missionStatement}</p>
             </motion.div>
           </div>
         </div>
-
-        {/* 2×2 Button Grid */}
         <div className="grid grid-cols-2 border-t border-white/5">
           {panels.map((panel, i) => (
             <button
@@ -240,8 +660,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
             </button>
           ))}
         </div>
-
-        {/* Active panel content */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeIndex}
@@ -250,7 +668,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.4, ease: EASE }}
           >
-            {/* Image strip */}
             <div className="relative h-48 overflow-hidden">
               <img
                 src={panels[activeIndex].image}
@@ -258,8 +675,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
                 className="w-full h-full object-cover scale-105"
               />
             </div>
-
-            {/* Text */}
             <div className="px-7 py-7 border-b border-white/5">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-1 h-9 bg-blue-500 rounded-full" />
@@ -268,8 +683,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
                 </h3>
               </div>
               <p className="text-blue-100/75 text-[15px] leading-relaxed">{panels[activeIndex].text}</p>
-
-              {/* Dot progress */}
               <div className="flex gap-2 mt-7">
                 {panels.map((_, i) => (
                   <button
@@ -284,9 +697,7 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
         </AnimatePresence>
       </div>
 
-      {/* ══════════ DESKTOP ══════════ */}
       <div className="hidden lg:flex w-full min-h-[600px] h-[760px]">
-        {/* Left label panel */}
         <div className="relative w-[25%] max-w-[420px] shrink-0 flex flex-col justify-between p-12 border-r border-white/10 overflow-hidden">
           <img src="https://images.unsplash.com/photo-1513828583688-c52646db42da?w=800&q=80" alt="Factory" className="absolute inset-0 w-full h-full object-cover opacity-40" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to bottom, rgba(2,6,23,0.55) 0%, rgba(15,23,42,0.45) 50%, rgba(2,6,23,0.75) 100%)' }} />
@@ -301,8 +712,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
             <p className="text-blue-100/90 text-base lg:text-lg leading-relaxed font-medium">{missionStatement}</p>
           </div>
         </div>
-
-        {/* Expandable panels */}
         <div className="flex flex-1">
           {panels.map((panel, i) => {
             const isActive = activeIndex === i;
@@ -316,17 +725,16 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
                 onMouseEnter={() => setActiveIndex(i)}
                 onFocus={() => setActiveIndex(i)}
                 tabIndex={0}
-                className={`group relative flex-1 overflow-hidden cursor-pointer border-l border-white/10 outline-none transition-all duration-700 focus-visible:ring-4 focus-visible:ring-blue-500 ${isActive ? 'grow-[2.5]' : 'grow-[1]'}`}
+                className={`group relative flex-1 overflow-hidden cursor-pointer border-l border-white/10 outline-none transition-all duration-700 focus-visible:ring-4 focus-visible:ring-blue-500 ${isActive ? 'grow-[2.5]' : 'grow'}`}
                 style={{ transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)' }}
               >
                 <img src={panel.image} alt={panel.title} className={`absolute inset-0 w-full h-full object-cover origin-center transition-transform duration-1000 ease-out ${isActive ? 'scale-105' : 'scale-100'}`} />
                 <div className={`absolute inset-0 transition-colors duration-700 ${isActive ? 'bg-slate-900/20' : 'bg-slate-950/80'}`} />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, #020617 0%, transparent 70%)' }} />
                 <div className="absolute inset-0 p-8 flex flex-col justify-between z-10">
-                  <span className={`font-mono text-xs font-bold tracking-widest transition-colors duration-500 ${isActive ? 'text-blue-300' : 'text-white/40'}`}>
-                  </span>
+                  <span className={`font-mono text-xs font-bold tracking-widest transition-colors duration-500 ${isActive ? 'text-blue-300' : 'text-white/40'}`} />
                   <div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tight mb-2 drop-shadow-md">{panel.title}</h3>
+                    <h3 className="text-lg lg:text-xl font-black text-white uppercase tracking-tight mb-2 drop-shadow-md">{panel.title}</h3>
                     <div className={`overflow-hidden transition-all duration-700 ease-out border-l-2 pl-4 ${isActive ? 'max-h-[150px] opacity-100 translate-y-0 border-blue-500' : 'max-h-0 opacity-0 translate-y-4 border-transparent'}`}>
                       <p className="text-blue-50/80 text-sm leading-relaxed max-w-sm pt-2">{panel.text}</p>
                     </div>
@@ -345,7 +753,6 @@ export function MissionSection({ locale, t }: { locale: Locale; t: any }) {
    VISION SECTION
 ══════════════════════════════════════ */
 function VisionSection({ locale, t }: { locale: Locale; t: any }) {
-  // Desktop scroll ref
   const desktopRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: desktopRef, offset: ['start start', 'end end'] });
 
@@ -353,19 +760,15 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
     {
       number:  '01',
       image:   'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1400&q=80',
-      eyebrow: locale === 'en' ? 'Industrial Philosophy' : 'Filosofi Industri',
-      title:   locale === 'en'
-        ? (<>Manufacturing<br />is not about <span className="text-blue-400">speed</span>.</>)
-        : (<>Manufaktur<br />bukan soal <span className="text-blue-400">kecepatan</span>.</>),
+      eyebrow: locale === 'en' ? 'Philosophy' : 'Filosofi',
+      title:   (<>Manufacturing<br />is not about <span className="text-blue-400">speed</span>.</>),
       align: 'left' as const,
     },
     {
       number:  '02',
       image:   'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1400&q=80',
-      eyebrow: locale === 'en' ? 'Quality Standard' : 'Standar Kualitas',
-      title:   locale === 'en'
-        ? (<>It is about<br />delivering <span className="text-blue-400">quality</span>.</>)
-        : (<>Melainkan tentang<br />menghadirkan <span className="text-blue-400">kualitas</span>.</>),
+      eyebrow: 'Quality Standard',
+      title:   (<>It is about<br />delivering <span className="text-blue-400">quality</span>.</>),
       align: 'right' as const,
     },
     {
@@ -379,15 +782,12 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
     {
       number:  '04',
       image:   'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=1400&q=80',
-      eyebrow: locale === 'en' ? 'Engineering Practice' : 'Praktik Rekayasa',
-      title:   locale === 'en'
-        ? (<>Engineering<br />practice <span className="text-blue-400">built to last.</span></>)
-        : (<>Rekayasa<br />dirancang <span className="text-blue-400">untuk bertahan.</span></>),
+      eyebrow:  'Engineering Practice',
+      title:   (<>Engineering<br />practice <span className="text-blue-400">built to last.</span></>),
       align: 'right' as const,
     },
   ], [locale, t]);
 
-  /* Desktop scroll-driven slides */
   const makeSlide = (inStart: number, visibleStart: number, visibleEnd: number, outEnd: number) => ({
     opacity: useTransform(scrollYProgress, [inStart, visibleStart, visibleEnd, outEnd], [0, 1, 1, 0]),
     scale:   useTransform(scrollYProgress, [inStart, visibleStart], [0.96, 1]),
@@ -403,7 +803,9 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
 
   const navItems = visionBlocks.map((b, i) => ({
     label:    b.number,
-    title:    (locale === 'en' ? ['Manufacturing', 'Quality', 'Vision', 'Engineering'] : ['Manufaktur', 'Kualitas', 'Visi', 'Rekayasa'])[i],
+    title:    (locale === 'en'
+      ? ['Manufacturing', 'Quality', 'Vision', 'Engineering']
+      : ['Manufaktur', 'Kualitas', 'Visi', 'Engineering'])[i],
     progress: [0.08, 0.34, 0.62, 0.90][i],
   }));
 
@@ -416,100 +818,10 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
 
   return (
     <>
-      {/* ══════════ MOBILE — snap scroll ══════════ */}
-      <div
-        className="lg:hidden"
-        style={{ height: '100svh', overflowY: 'scroll', scrollSnapType: 'y mandatory', WebkitOverflowScrolling: 'touch' }}
-      >
-        {visionBlocks.map((block, i) => {
-          const reverse = block.align === 'right';
-          return (
-            <div
-              key={block.number}
-              style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always' }}
-              className="relative flex flex-col justify-end overflow-hidden"
-              // each panel fills exactly the snap container
-              // we use h-full to fill the 100svh container slot
-              // but since the container scrolls, each child must also be 100svh
-            >
-              {/* give each slide full viewport height */}
-              <div className="relative flex flex-col justify-end overflow-hidden" style={{ height: '100svh' }}>
-                {/* Background */}
-                <div className="absolute inset-0">
-                  <img src={block.image} alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/80 to-[#020617]/25" />
-                <div className={`absolute inset-0 ${reverse ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#020617]/65 to-transparent`} />
-                <div
-                  className="absolute inset-0 opacity-[0.04]"
-                  style={{
-                    backgroundImage: `linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)`,
-                    backgroundSize: '40px 40px',
-                  }}
-                />
-                {i === 0 && <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-blue-400 to-transparent" />}
-
-                {/* Corner markers */}
-                <div className="absolute top-5 left-5 w-4 h-4 border-t border-l border-blue-400/35" />
-                <div className="absolute top-5 right-5 w-4 h-4 border-t border-r border-blue-400/35" />
-                <div className="absolute bottom-5 left-5 w-4 h-4 border-b border-l border-blue-400/35" />
-                <div className="absolute bottom-5 right-5 w-4 h-4 border-b border-r border-blue-400/35" />
-
-                {/* Ghost number */}
-                <div className={`absolute top-12 ${reverse ? 'right-2' : 'left-2'} font-black text-[9rem] leading-none tracking-[-0.12em] text-white/[0.04] select-none pointer-events-none`}>
-                  {block.number}
-                </div>
-
-                {/* Eyebrow */}
-                <div className={`absolute top-12 ${reverse ? 'right-6 text-right' : 'left-6'}`}>
-                  <p className="font-mono text-[10px] tracking-[0.38em] text-blue-300/60 uppercase">
-                    {block.eyebrow}
-                  </p>
-                </div>
-
-                {/* Slide index dots */}
-                <div className="absolute top-12 left-1/2 -translate-x-1/2 flex gap-2">
-                  {visionBlocks.map((_, di) => (
-                    <div
-                      key={di}
-                      className={`rounded-full transition-all duration-300 ${di === i ? 'w-6 h-1.5 bg-blue-500' : 'w-1.5 h-1.5 bg-white/20'}`}
-                    />
-                  ))}
-                </div>
-
-                {/* Main content */}
-                <div className={`relative z-10 px-6 pb-16 pt-28 ${reverse ? 'text-right' : 'text-left'}`}>
-                  {block.number === '03' ? (
-                    <div className="bg-slate-950/80 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-[0_20px_80px_rgba(0,0,0,0.5)] relative overflow-hidden text-left">
-                      <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600" />
-                      <p className="font-mono text-[10px] tracking-[0.32em] text-blue-300/70 mb-4 uppercase">{block.eyebrow}</p>
-                      <h2 className="text-3xl font-black text-white tracking-[-0.04em] leading-[0.95] mb-4">{block.title}</h2>
-                      <div className="w-10 h-[2px] bg-blue-500 mb-4" />
-                      <p className="text-blue-100/80 text-sm leading-relaxed font-medium">{block.description}</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <h2 className="text-[3.4rem] leading-[0.85] tracking-[-0.07em] font-black uppercase text-white mb-6">
-                        {block.title}
-                      </h2>
-                      <div className={`h-[2px] w-16 bg-blue-500 ${reverse ? 'ml-auto' : ''}`} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Bottom divider */}
-                <div className="absolute bottom-0 left-6 right-6 flex items-center gap-3 pb-1">
-                  <div className="flex-1 h-px bg-white/8" />
-                  <span className="font-mono text-[10px] tracking-[0.35em] text-blue-300/40">{block.number} / 0{visionBlocks.length}</span>
-                  <div className="flex-1 h-px bg-white/8" />
-                </div>
-              </div>
-            </div>
-          );
-        })}
+      <div className="lg:hidden">
+        <MobileVisionSlides visionBlocks={visionBlocks} />
       </div>
 
-      {/* ══════════ DESKTOP — snap scroll ══════════ */}
       <section
         ref={desktopRef}
         className="hidden lg:block relative bg-slate-950"
@@ -530,13 +842,11 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
               backgroundSize: '60px 60px',
             }}
           />
-
           <div className="absolute top-8 left-8 w-5 h-5 border-t border-l border-blue-400/30" />
           <div className="absolute top-8 right-8 w-5 h-5 border-t border-r border-blue-400/30" />
           <div className="absolute bottom-8 left-8 w-5 h-5 border-b border-l border-blue-400/30" />
           <div className="absolute bottom-8 right-8 w-5 h-5 border-b border-r border-blue-400/30" />
 
-          {/* Right nav */}
           <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-5">
             {navItems.map((item, i) => (
               <button
@@ -556,12 +866,10 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
             ))}
           </div>
 
-          {/* Progress bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-20">
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5 z-20">
             <motion.div className="h-full bg-blue-500" style={{ width: useTransform(scrollYProgress, [0, 1], ['0%', '100%']) }} />
           </div>
 
-          {/* Slides */}
           <div className="absolute inset-0 flex items-center justify-center px-6 sm:px-12">
             {slides.map(({ opacity, scale, y }, i) => {
               const block = visionBlocks[i];
@@ -572,15 +880,15 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
                   className="absolute will-change-transform w-full max-w-5xl px-8"
                 >
                   {i === 2 ? (
-                    <div className="max-w-3xl mx-auto bg-slate-950/80 backdrop-blur-xl p-8 sm:p-12 border border-white/10 rounded-[2rem] shadow-[0_20px_100px_rgba(0,0,0,0.5)] relative overflow-hidden">
-                      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 via-blue-400 to-blue-600" />
+                    <div className="max-w-3xl mx-auto bg-slate-950/80 backdrop-blur-xl p-8 sm:p-12 border border-white/10 rounded-4xl shadow-[0_20px_100px_rgba(0,0,0,0.5)] relative overflow-hidden">
+                      <div className="absolute top-0 left-0 right-0 h-[3px] bg-linear-to-r from-blue-600 via-blue-400 to-blue-600" />
                       <p className="font-mono text-[11px] tracking-[0.3em] text-blue-300/70 mb-6 uppercase">{block.eyebrow}</p>
                       <h2 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-[-0.04em] leading-[0.95]">{block.title}</h2>
                       <p className="text-base sm:text-lg text-blue-100/80 leading-relaxed font-medium">{block.description}</p>
                     </div>
                   ) : (
                     <div className={`flex ${block.align === 'right' ? 'justify-end' : 'justify-start'}`}>
-                      <div className="px-8 sm:px-12 py-8 rounded-[2rem] bg-black/25 backdrop-blur-md border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.45)] max-w-3xl">
+                      <div className="px-8 sm:px-12 py-8 rounded-4xl bg-black/25 backdrop-blur-md border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.45)] max-w-3xl">
                         <p className="font-mono text-[11px] tracking-[0.3em] text-blue-300/70 mb-6 uppercase">{block.eyebrow}</p>
                         <h2 className="text-[2.3rem] sm:text-5xl lg:text-7xl font-black text-white leading-[0.92] tracking-[-0.04em]">{block.title}</h2>
                       </div>
@@ -599,7 +907,7 @@ function VisionSection({ locale, t }: { locale: Locale; t: any }) {
 /* ══════════════════════════════════════
    PROCESS SECTION
 ══════════════════════════════════════ */
-function ProcessSection({ locale }: { locale: Locale }) {
+function ProcessSection({ locale, t }: { locale: Locale; t: any }) {
   const desktopRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: desktopRef, offset: ['start start', 'end end'] });
 
@@ -633,7 +941,7 @@ function ProcessSection({ locale }: { locale: Locale }) {
     },
     {
       number:   '04',
-      title:    locale === 'en' ? 'Project Completion'     : 'Penyelesaian Proyek',
+      title:    locale === 'en' ? 'Delivery'     : 'Pengiriman',
       subtitle: locale === 'en'
         ? 'Finished components delivered with consistency, readiness, and manufacturing confidence.'
         : 'Komponen selesai dikirim dengan konsistensi, kesiapan, dan kualitas manufaktur.',
@@ -664,158 +972,10 @@ function ProcessSection({ locale }: { locale: Locale }) {
 
   return (
     <>
-      {/* ══════════ MOBILE — snap scroll ══════════ */}
-      <div
-        className="lg:hidden"
-        style={{ height: '100svh', overflowY: 'scroll', scrollSnapType: 'y mandatory', WebkitOverflowScrolling: 'touch' }}
-      >
-        {/* Header slide */}
-        <div style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', height: '100svh' }} className="relative flex flex-col justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-[#020617]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(59,130,246,0.12),transparent_65%)]" />
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px)`,
-              backgroundSize: '36px 36px',
-            }}
-          />
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-blue-600 via-blue-400 to-transparent" />
-          <div className="absolute top-5 left-5 w-4 h-4 border-t border-l border-blue-400/35" />
-          <div className="absolute top-5 right-5 w-4 h-4 border-t border-r border-blue-400/35" />
-          <div className="absolute bottom-5 left-5 w-4 h-4 border-b border-l border-blue-400/35" />
-          <div className="absolute bottom-5 right-5 w-4 h-4 border-b border-r border-blue-400/35" />
-
-          <div className="relative z-10 px-8">
-            <p className="font-mono text-[10px] tracking-[0.4em] text-blue-300/65 uppercase mb-6">
-              {locale === 'en' ? 'Engineering Workflow' : 'Alur Rekayasa'}
-            </p>
-            <h2 className="text-[3.8rem] leading-[0.82] tracking-[-0.09em] font-black uppercase text-white">
-              {locale === 'en'
-                ? (<>Precision<br />manufacturing<br /><span className="text-blue-400">system.</span></>)
-                : (<>Sistem<br />manufaktur<br /><span className="text-blue-400">presisi.</span></>)
-              }
-            </h2>
-            <div className="mt-7 w-20 h-[2px] bg-blue-500" />
-            {/* Step pills */}
-            <div className="mt-8 flex flex-wrap gap-2">
-              {steps.map((step) => (
-                <div key={step.number} className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5">
-                  <span className="font-mono text-[9px] tracking-[0.25em] text-blue-300/60">{step.number}</span>
-                  <span className="text-[11px] text-white/50 uppercase tracking-[0.15em]">{step.tag}</span>
-                </div>
-              ))}
-            </div>
-            {/* Scroll cue */}
-            <div className="mt-12 flex items-center gap-3">
-              <div className="flex flex-col gap-1">
-                <div className="w-5 h-px bg-blue-500/60" />
-                <div className="w-3 h-px bg-blue-500/30" />
-              </div>
-              <p className="text-[10px] uppercase tracking-[0.3em] text-white/30">
-                {locale === 'en' ? 'Scroll to explore' : 'Gulir untuk jelajahi'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Step slides */}
-        {steps.map((step, i) => (
-          <div
-            key={step.number}
-            style={{ scrollSnapAlign: 'start', scrollSnapStop: 'always', height: '100svh' }}
-            className="relative flex flex-col justify-end overflow-hidden"
-          >
-            {/* Background */}
-            <div className="absolute inset-0">
-              <img src={step.image} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/75 to-[#020617]/20" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#020617]/80 to-[#020617]/20" />
-            <div
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage: `linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)`,
-                backgroundSize: '40px 40px',
-              }}
-            />
-
-            {/* Corner markers */}
-            <div className="absolute top-5 left-5 w-4 h-4 border-t border-l border-blue-400/30" />
-            <div className="absolute top-5 right-5 w-4 h-4 border-t border-r border-blue-400/30" />
-            <div className="absolute bottom-5 left-5 w-4 h-4 border-b border-l border-blue-400/30" />
-            <div className="absolute bottom-5 right-5 w-4 h-4 border-b border-r border-blue-400/30" />
-
-            {/* Ghost number */}
-            <div className="absolute bottom-8 right-2 font-black text-[7rem] leading-none tracking-[-0.1em] text-white/[0.04] select-none pointer-events-none">
-              {step.number}
-            </div>
-
-            {/* Slide dots */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-              {steps.map((_, di) => (
-                <div
-                  key={di}
-                  className={`rounded-full transition-all duration-300 ${di === i ? 'w-6 h-1.5 bg-blue-500' : 'w-1.5 h-1.5 bg-white/20'}`}
-                />
-              ))}
-            </div>
-
-            {/* Content */}
-            <div className="relative z-10 px-6 pb-14 pt-24">
-              {/* Stage badge */}
-              <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border border-white/10 bg-black/30 backdrop-blur-sm mb-6">
-                <span className="font-mono text-[10px] tracking-[0.28em] text-blue-300">{step.number}</span>
-                <div className="w-5 h-px bg-blue-500/60" />
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/50">
-                  {locale === 'en' ? 'Production Stage' : 'Tahapan Produksi'}
-                </span>
-              </div>
-
-              {/* Title */}
-              <h2 className="text-[2.8rem] leading-[0.88] tracking-[-0.06em] font-black text-white uppercase mb-5">
-                {step.title}
-              </h2>
-
-              {/* Divider */}
-              <div className="flex items-center gap-3 mb-5">
-                <div className="h-[2px] w-12 bg-blue-500 rounded-full" />
-                <div className="h-[2px] flex-1 bg-white/8 rounded-full" />
-              </div>
-
-              {/* Subtitle */}
-              <p className="text-blue-100/75 text-[15px] leading-relaxed max-w-sm">{step.subtitle}</p>
-
-              {/* Meta row */}
-              <div className="mt-7 flex items-center gap-5">
-                <div>
-                  <p className="font-mono text-[8px] tracking-[0.28em] text-white/25 uppercase">Status</p>
-                  <p className="mt-1 text-[11px] text-white/65 font-medium">{locale === 'en' ? 'Active' : 'Aktif'}</p>
-                </div>
-                <div className="w-px h-7 bg-white/10" />
-                <div>
-                  <p className="font-mono text-[8px] tracking-[0.28em] text-white/25 uppercase">Tolerance</p>
-                  <p className="mt-1 text-[11px] text-white/65 font-medium">{locale === 'en' ? 'Verified' : 'Terverifikasi'}</p>
-                </div>
-                <div className="w-px h-7 bg-white/10" />
-                <div>
-                  <p className="font-mono text-[8px] tracking-[0.28em] text-white/25 uppercase">Stage</p>
-                  <p className="mt-1 text-[11px] font-mono text-blue-300/80">{step.number}/{steps.length}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom rule */}
-            <div className="relative z-10 px-6 pb-5 flex items-center gap-3">
-              <div className="flex-1 h-px bg-white/8" />
-              <span className="font-mono text-[9px] tracking-[0.35em] text-blue-300/35">{step.number} / 0{steps.length}</span>
-              <div className="flex-1 h-px bg-white/8" />
-            </div>
-          </div>
-        ))}
+      <div className="lg:hidden">
+        <MobileProcessSlides steps={steps} locale={locale} />
       </div>
 
-      {/* ══════════ DESKTOP — sticky scroll ══════════ */}
       <section
         id="process"
         ref={desktopRef}
@@ -840,28 +1000,27 @@ function ProcessSection({ locale }: { locale: Locale }) {
               backgroundSize: '60px 60px',
             }}
           />
-
           <div className="absolute top-8 left-8 w-5 h-5 border-t border-l border-blue-400/30" />
           <div className="absolute top-8 right-8 w-5 h-5 border-t border-r border-blue-400/30" />
           <div className="absolute bottom-8 left-8 w-5 h-5 border-b border-l border-blue-400/30" />
           <div className="absolute bottom-8 right-8 w-5 h-5 border-b border-r border-blue-400/30" />
 
-          {/* Left progress rail */}
           <div className="absolute left-8 top-0 bottom-0 flex items-center z-20">
             <div className="relative w-px h-[70vh] bg-white/10">
-              <motion.div className="absolute top-0 left-0 w-full bg-blue-500" style={{ height: useTransform(scrollYProgress, [0, 1], ['0%', '100%']) }} />
+              <motion.div
+                className="absolute top-0 left-0 w-full bg-blue-500"
+                style={{ height: useTransform(scrollYProgress, [0, 1], ['0%', '100%']) }}
+              />
             </div>
           </div>
 
-          {/* Heading */}
           <div className="absolute top-8 sm:top-10 inset-x-0 text-center z-20">
             <p className="text-[10px] sm:text-xs uppercase tracking-[0.45em] text-blue-300/80 font-bold">
               {locale === 'en' ? 'Manufacturing Process' : 'Proses Manufaktur'}
             </p>
-            <div className="mt-3 mx-auto w-10 h-[2px] rounded-full bg-blue-500" />
+            <div className="mt-3 mx-auto w-10 h-0.5 rounded-full bg-blue-500" />
           </div>
 
-          {/* Right nav */}
           <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 flex flex-col gap-5">
             {steps.map((step, i) => (
               <button
@@ -881,7 +1040,6 @@ function ProcessSection({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          {/* Content slides */}
           <div className="absolute inset-0 flex items-center justify-center px-6 sm:px-12 lg:px-24 z-20">
             {steps.map((step, i) => (
               <motion.div
@@ -897,7 +1055,7 @@ function ProcessSection({ locale }: { locale: Locale }) {
                       {locale === 'en' ? 'Production Stage' : 'Tahapan Produksi'}
                     </span>
                   </div>
-                  <div className="rounded-[2rem] border border-white/10 bg-black/20 backdrop-blur-lg p-8 sm:p-12 shadow-[0_20px_100px_rgba(0,0,0,0.45)]">
+                  <div className="rounded-4xl border border-white/10 bg-black/20 backdrop-blur-lg p-8 sm:p-12 shadow-[0_20px_100px_rgba(0,0,0,0.45)]">
                     <h2 className="text-[2.5rem] sm:text-5xl lg:text-7xl font-black text-white leading-[0.92] tracking-[-0.05em]">{step.title}</h2>
                     <div className="my-8 h-[3px] w-16 rounded-full bg-blue-500" />
                     <p className="text-base sm:text-lg lg:text-xl text-blue-100/75 leading-relaxed max-w-2xl">{step.subtitle}</p>
@@ -907,8 +1065,7 @@ function ProcessSection({ locale }: { locale: Locale }) {
             ))}
           </div>
 
-          {/* Bottom progress bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-white/5 z-30">
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/5 z-30">
             <motion.div className="h-full bg-blue-500" style={{ width: useTransform(scrollYProgress, [0, 1], ['0%', '100%']) }} />
           </div>
         </div>
@@ -957,7 +1114,7 @@ export function AboutPage() {
       <StatsSection   locale={locale} />
       <MissionSection locale={locale} t={t} />
       <VisionSection  locale={locale} t={t} />
-      <ProcessSection locale={locale} />
+      <ProcessSection locale={locale} t={t} />
       <TimelineSection />
     </div>
   );

@@ -706,11 +706,6 @@ export function HomePage() {
             className="mt-14 lg:mt-16 pt-10 border-t border-zinc-200
                        flex flex-col sm:flex-row items-center justify-between gap-4"
           >
-            <p className="text-sm text-zinc-400 max-w-md leading-relaxed text-center sm:text-left">
-              {locale === "en"
-                ? "Every capability is backed by our ISO 9001:2015 quality management system."
-                : "Setiap kemampuan didukung oleh sistem manajemen kualitas ISO 9001:2015 kami."}
-            </p>
 
             <ProcessLink locale={locale}>
               {locale === "en" ? "Learn about our process" : "Pelajari proses kami"}
@@ -849,11 +844,7 @@ export function HomePage() {
               </span>
 
               <h2 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-white leading-[1.05] tracking-tight mb-6">
-                {locale === "en" ? (
-                  <>Precision Manufacturing<br /><span className="text-blue-200">Built to Last.</span></>
-                ) : (
-                  <>Manufaktur Presisi<br /><span className="text-blue-200">Dibangun untuk Bertahan.</span></>
-                )}
+                  <>Metal Components Hardened by <br /><span className="text-blue-200">Quality</span></>
               </h2>
 
               <p className="text-base sm:text-lg text-blue-100/70 leading-relaxed max-w-xl">
